@@ -1,11 +1,20 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { fabric } from "fabric";
+import { useAutoResize } from "@/features/hooks/useAutoResize";
 
 interface InitProps {
   initialCanvas: fabric.Canvas;
   initialContainer: HTMLDivElement;
 }
 export const useEditor = () => {
+  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+
+  useAutoResize({
+    canvas,
+    container,
+  });
+  
   const init = useCallback(({ initialCanvas, initialContainer }: InitProps) => {
     fabric.Object.prototype.set({
       cornerColor: "#FFF",
@@ -15,7 +24,7 @@ export const useEditor = () => {
       transparentCorners: false,
       borderOpacityWhenMoving: 1,
       cornerStrokeColor: "#3b82f6",
-    })
+    });
     const initialWorkSpace = new fabric.Rect({
       width: 900,
       height: 1200,
@@ -33,6 +42,17 @@ export const useEditor = () => {
     initialCanvas.add(initialWorkSpace);
     initialCanvas.centerObject(initialWorkSpace);
     initialCanvas.clipPath = initialWorkSpace;
+    setCanvas(initialCanvas);
+    setContainer(initialContainer);
+    const testRec = new fabric.Rect({
+      fill: "red",
+      width: 100,
+      height: 100,
+    })
+
+    initialCanvas.add(testRec);
+    initialCanvas.centerObject(testRec);
+
   }, []);
 
   return {

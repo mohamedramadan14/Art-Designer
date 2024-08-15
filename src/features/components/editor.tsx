@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useEditor } from "../hooks/useEditor";
+import { useEditor } from "@/features/hooks/useEditor";
 import { fabric } from "fabric";
+import { Navbar } from "@/features/components/navbar";
 
 export const Editor = () => {
   const { init } = useEditor();
@@ -27,6 +28,7 @@ export const Editor = () => {
    */
   return (
     <div className="h-full flex flex-col">
+      <Navbar />
       <div ref={workspaceRef} className="flex-1 h-full bg-muted">
         <canvas ref={canvasRef} />
       </div>
