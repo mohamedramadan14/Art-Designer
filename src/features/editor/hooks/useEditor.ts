@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { fabric } from "fabric";
-import { useAutoResize } from "@/features/hooks/useAutoResize";
+import { useAutoResize } from "@/features/editor/hooks/useAutoResize";
 
 interface InitProps {
   initialCanvas: fabric.Canvas;

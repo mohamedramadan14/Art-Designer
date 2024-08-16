@@ -1,4 +1,4 @@
-import { Editor } from "@/features/components/editor";
+import { Editor } from "@/features/editor/components/editor";
 
 const EditorProjectPage = ({
   params: { projectId },
