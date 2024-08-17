@@ -1,7 +1,11 @@
 import { useCallback, useState, useMemo } from "react";
 import { fabric } from "fabric";
 import { useAutoResize } from "@/features/editor/hooks/useAutoResize";
-import { BuildEditorProps, Editor } from "@/features/editor/types";
+import {
+  BuildEditorProps,
+  Editor,
+  EditorHookProps,
+} from "@/features/editor/types";
 import {
   CIRCLE_OPTIONS,
   DIAMOND_OPTIONS,
@@ -157,14 +161,28 @@ const buildEditor = ({
 
       addToWorkspace(canvasObject);
     },
-    fillColor,
+    getActiveFillColor: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return fillColor;
+      const value = selectedObject.get("fill") || fillColor;
+      /**
+       * We do this because currently gradients & patters are not supported
+       */
+      return value as string;
+    },
+    getActiveStrokeColor: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return strokeColor;
+      const value = selectedObject.get("stroke") || strokeColor;
+      return value;
+    },
     strokeColor,
     strokeWidth,
     canvas,
     selectedObjects,
   };
 };
-export const useEditor = () => {
+export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
@@ -178,7 +196,7 @@ export const useEditor = () => {
     container,
   });
 
-  useCanvasEvents({ canvas, setSelectedObjects });
+  useCanvasEvents({ canvas, setSelectedObjects, clearSelectionCallback });
 
   const editor = useMemo(() => {
     if (canvas) {

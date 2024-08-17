@@ -39,11 +39,16 @@ export interface Editor {
   changeStrokeColor: (value: string) => void;
   changeStrokeWidth: (value: number) => void;
 
-  fillColor: string;
+  getActiveFillColor: () => string;
+  getActiveStrokeColor: () => string;
   strokeColor: string;
   strokeWidth: number;
   canvas: fabric.Canvas;
   selectedObjects: fabric.Object[];
+}
+
+export interface EditorHookProps{
+  clearSelectionCallback?: () => void;
 }
 
 export interface CircleOptions {

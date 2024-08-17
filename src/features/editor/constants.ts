@@ -7,6 +7,16 @@ import {
   TriangleOptions,
 } from "@/features/editor/types";
 
+
+export const SELECTION_DEPENDENT_TOOLS = [
+  "fill",
+  "font",
+  "filter",
+  "opacity",
+  "remove-bg",
+  "stroke-color",
+  "stroke-width",
+]
 export const FILL_COLOR = "rgba(0, 0, 0, 1)";
 export const STROKE_COLOR = "rgba(0, 0, 0, 1)";
 export const STROKE_WIDTH = 2;

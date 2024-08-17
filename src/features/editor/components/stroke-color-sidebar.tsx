@@ -4,21 +4,21 @@ import { ToolSidebarHeader } from "@/features/editor/components/tool-sidebar-hea
 import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-close";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ColorPicker } from "@/features/editor/components/color-picker";
-import { FILL_COLOR } from "@/features/editor/constants";
+import { STROKE_COLOR } from "@/features/editor/constants";
 
-interface FillColorSidebarProps {
+interface StrokeColorSidebarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
   editor: Editor | undefined;
 }
-export const FillColorSidebar = ({
+export const StrokeColorSidebar = ({
   activeTool,
   onChangeActiveTool,
   editor,
-}: FillColorSidebarProps) => {
-  const value = editor?.getActiveFillColor() || FILL_COLOR;
+}: StrokeColorSidebarProps) => {
+  const value = editor?.getActiveStrokeColor() || STROKE_COLOR;
   const onChange = (value: string) => {
-    editor?.changeFillColor(value);
+    editor?.changeStrokeColor(value);
   };
   const onClose = () => {
     onChangeActiveTool("select");
@@ -27,12 +27,12 @@ export const FillColorSidebar = ({
     <aside
       className={cn(
         "bg-white relative border-r z-[40] w-[360px] h-full flex flex-col",
-        activeTool === "fill" ? "visible" : "hidden"
+        activeTool === "stroke-color" ? "visible" : "hidden"
       )}
     >
       <ToolSidebarHeader
-        title="Fill Color"
-        description="Add and customize fill color to your elements"
+        title="Stroke Color"
+        description="Add and customize Stroke color to your elements"
       />
       <ScrollArea>
         <div className="space-y-6 p-4">

@@ -10,10 +10,21 @@ import { Footer } from "@/features/editor/components/footer";
 import { ActiveTool } from "@/features/editor/types";
 import { ShapesSidebar } from "@/features/editor/components/shapes-sidebar";
 import { FillColorSidebar } from "@/features/editor/components/fill-color-sidebar";
+import { StrokeColorSidebar } from "@/features/editor/components/stroke-color-sidebar";
+import { SELECTION_DEPENDENT_TOOLS } from "@/features/editor/constants";
 
 export const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
-  const { init, editor } = useEditor();
+
+  const onClearSelection = useCallback(() => {
+    if (SELECTION_DEPENDENT_TOOLS.includes(activeTool)) {
+      setActiveTool("select");
+    }
+  }, [activeTool]);
+
+  const { init, editor } = useEditor({
+    clearSelectionCallback: onClearSelection,
+  });
 
   const canvasRef = useRef<any>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
@@ -70,6 +81,11 @@ export const Editor = () => {
           onChangeActiveTool={onChangeActiveTool}
         />
         <FillColorSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <StrokeColorSidebar
           editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
