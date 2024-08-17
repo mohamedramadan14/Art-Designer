@@ -1,5 +1,4 @@
 import { fabric } from "fabric";
-
 export type ActiveTool =
   | "select"
   | "images"
@@ -19,6 +18,13 @@ export type ActiveTool =
 
 export type BuildEditorProps = {
   canvas: fabric.Canvas;
+  fillColor: string;
+  strokeColor: string;
+  strokeWidth: number;
+  setFillColor: (fillColor: string) => void;
+  setStrokeColor: (strokeColor: string) => void;
+  setStrokeWidth: (strokeWidth: number) => void;
+  selectedObjects: fabric.Object[];
 };
 
 export interface Editor {
@@ -28,6 +34,16 @@ export interface Editor {
   addTriangle: () => void;
   addInvertedTriangle: () => void;
   addDiamond: () => void;
+
+  changeFillColor: (value: string) => void;
+  changeStrokeColor: (value: string) => void;
+  changeStrokeWidth: (value: number) => void;
+
+  fillColor: string;
+  strokeColor: string;
+  strokeWidth: number;
+  canvas: fabric.Canvas;
+  selectedObjects: fabric.Object[];
 }
 
 export interface CircleOptions {
@@ -70,3 +86,5 @@ export interface TriangleOptions {
   height: number;
   angle: number;
 }
+
+
