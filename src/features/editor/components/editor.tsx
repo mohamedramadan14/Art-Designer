@@ -8,10 +8,11 @@ import { Sidebar } from "@/features/editor/components/sidebar";
 import { Toolbar } from "@/features/editor/components/toolbar";
 import { Footer } from "@/features/editor/components/footer";
 import { ActiveTool } from "../types";
+import { ShapesSidebar } from "@/features/editor/components/shapes-sidebar";
 
 export const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
-  const { init } = useEditor();
+  const { init, editor } = useEditor();
 
   const canvasRef = useRef<any>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
@@ -56,9 +57,14 @@ export const Editor = () => {
    */
   return (
     <div className="h-full flex flex-col">
-      <Navbar activeTool={activeTool} onChangeActiveTool={onChangeActiveTool}/>
+      <Navbar activeTool={activeTool} onChangeActiveTool={onChangeActiveTool} />
       <div className="absolute h-[calc(100%-68px)] w-full top-[68px] flex">
         <Sidebar
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <ShapesSidebar
+          editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />
