@@ -10,8 +10,10 @@ import {
   CIRCLE_OPTIONS,
   DIAMOND_OPTIONS,
   FILL_COLOR,
+  FONT_ALIGNMENT,
   FONT_FAMILY,
   FONT_SIZE,
+  FONT_STYLE,
   FONT_WEIGHT,
   INVERTED_TRIANGLE_OPTIONS,
   RECTANGLE_OPTIONS,
@@ -23,6 +25,7 @@ import {
 } from "@/features/editor/constants";
 import { useCanvasEvents } from "@/features/editor/hooks/useCanvasEvents";
 import { isTextType } from "@/features/editor/utils";
+import { ITextboxOptions, ITextOptions } from "fabric/fabric-impl";
 
 interface InitProps {
   initialCanvas: fabric.Canvas;
@@ -72,6 +75,42 @@ const buildEditor = ({
         ...options,
       });
       addToWorkspace(object);
+    },
+    changeFontLineThrough: (value: boolean) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // using _set() instead of set to avoid TS errors
+          object._set("linethrough", value);
+        }
+      });
+      canvas.renderAll();
+    },
+    changeFontUnderline: (value: boolean) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // using _set() instead of set to avoid TS errors
+          object._set("underline", value);
+        }
+      });
+      canvas.renderAll();
+    },
+    changeTextAlignment: (value: string) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // using _set() instead of set to avoid TS errors
+          object._set("textAlign", value);
+        }
+      });
+      canvas.renderAll();
+    },
+    changeFontStyle: (value: string) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // using _set() instead of set to avoid TS errors
+          object._set("fontStyle", value);
+        }
+      });
+      canvas.renderAll();
     },
     changeFontSize(value: number) {
       setFontSize(value);
@@ -295,6 +334,38 @@ const buildEditor = ({
       // @ts-ignore
       // This is fault TS error due to library
       const value = selectedObject.get("fontWeight") || FONT_WEIGHT;
+      return value;
+    },
+    getActiveFontStyle: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return FONT_STYLE;
+      // @ts-ignore
+      // This is fault TS error due to library
+      const value = selectedObject.get("fontStyle") || FONT_STYLE;
+      return value;
+    },
+    getActiveLineThrough: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return false;
+      // @ts-ignore
+      // This is fault TS error due to library
+      const value = selectedObject.get("linethrough") || false;
+      return value;
+    },
+    getActiveUnderline: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return false;
+      // @ts-ignore
+      // This is fault TS error due to library
+      const value = selectedObject.get("underline") || false;
+      return value;
+    },
+    getActiveTextAlignment: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return FONT_ALIGNMENT;
+      // @ts-ignore
+      // This is fault TS error due to library
+      const value = selectedObject.get("textAlign") || FONT_ALIGNMENT;
       return value;
     },
     canvas,

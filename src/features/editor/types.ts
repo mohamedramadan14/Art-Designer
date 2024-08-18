@@ -35,7 +35,7 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
-  addText: (text: string , options?: ITextboxOptions) => void;
+  addText: (text: string, options?: ITextboxOptions) => void;
 
   addCircle: () => void;
   addSoftRectangle: () => void;
@@ -47,7 +47,11 @@ export interface Editor {
   bringForward: () => void;
   sendBackwards: () => void;
 
+  changeTextAlignment: (value: string) => void;
+  changeFontLineThrough: (value: boolean) => void;
+  changeFontUnderline: (value: boolean) => void;
   changeFontWeight: (value: number) => void;
+  changeFontStyle: (value: string) => void;
   changeFontSize: (value: number) => void;
   changeFontFamily: (value: string) => void;
   changeOpacity: (value: number) => void;
@@ -63,6 +67,10 @@ export interface Editor {
   getActiveOpacity: () => number;
   getActiveFontFamily: () => string;
   getActiveFontWeight: () => number;
+  getActiveFontStyle: () => string;
+  getActiveUnderline: () => boolean;
+  getActiveLineThrough: () => boolean;
+  getActiveTextAlignment: () => string;
   canvas: fabric.Canvas;
   selectedObjects: fabric.Object[];
 }
