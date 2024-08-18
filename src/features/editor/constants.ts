@@ -7,7 +7,6 @@ import {
   TriangleOptions,
 } from "@/features/editor/types";
 
-
 export const SELECTION_DEPENDENT_TOOLS = [
   "fill",
   "font",
@@ -16,10 +15,11 @@ export const SELECTION_DEPENDENT_TOOLS = [
   "remove-bg",
   "stroke-color",
   "stroke-width",
-]
+];
 export const FILL_COLOR = "rgba(0, 0, 0, 1)";
 export const STROKE_COLOR = "rgba(0, 0, 0, 1)";
 export const STROKE_WIDTH = 2;
+export const STROKE_DASH_ARRAY = [];
 
 export const CIRCLE_OPTIONS: CircleOptions = {
   radius: 175,
@@ -73,7 +73,6 @@ export const DIAMOND_OPTIONS: DiamondOptions = {
   height: 400,
   angle: 0,
 };
-
 
 export const colors = [
   material.red["500"],

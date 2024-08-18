@@ -25,6 +25,8 @@ export type BuildEditorProps = {
   setStrokeColor: (strokeColor: string) => void;
   setStrokeWidth: (strokeWidth: number) => void;
   selectedObjects: fabric.Object[];
+  strokeDashArray: number[];
+  setStrokeDashArray: (strokeDashArray: number[]) => void;
 };
 
 export interface Editor {
@@ -35,19 +37,22 @@ export interface Editor {
   addInvertedTriangle: () => void;
   addDiamond: () => void;
 
+  bringForward: () => void;
+  sendBackwards: () => void;
   changeFillColor: (value: string) => void;
   changeStrokeColor: (value: string) => void;
   changeStrokeWidth: (value: number) => void;
+  changeStrokeDashArray: (value: number[]) => void;
 
   getActiveFillColor: () => string;
   getActiveStrokeColor: () => string;
-  strokeColor: string;
-  strokeWidth: number;
+  getActiveStrokeWidth: () => number;
+  getActiveStrokeDashArray: () => number[];
   canvas: fabric.Canvas;
   selectedObjects: fabric.Object[];
 }
 
-export interface EditorHookProps{
+export interface EditorHookProps {
   clearSelectionCallback?: () => void;
 }
 
@@ -91,5 +96,3 @@ export interface TriangleOptions {
   height: number;
   angle: number;
 }
-
-

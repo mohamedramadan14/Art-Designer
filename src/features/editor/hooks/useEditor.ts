@@ -13,6 +13,7 @@ import {
   INVERTED_TRIANGLE_OPTIONS,
   RECTANGLE_OPTIONS,
   STROKE_COLOR,
+  STROKE_DASH_ARRAY,
   STROKE_WIDTH,
   TRIANGLE_OPTIONS,
 } from "@/features/editor/constants";
@@ -33,6 +34,8 @@ const buildEditor = ({
   setStrokeWidth,
   strokeWidth,
   selectedObjects,
+  strokeDashArray,
+  setStrokeDashArray,
 }: BuildEditorProps): Editor => {
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
@@ -54,6 +57,25 @@ const buildEditor = ({
   };
 
   return {
+    bringForward: () => {
+      canvas.getActiveObjects().forEach((object) => {
+        object.bringForward();
+      });
+      canvas.renderAll();
+      // this to fix overflow of workspace
+      const workspace = getWorkspace();
+      workspace?.sendToBack();
+    },
+    sendBackwards: () => {
+      canvas.getActiveObjects().forEach((object) => {
+        object.sendBackwards();
+      });
+
+      canvas.renderAll();
+      // this to fix overflow of workspace
+      const workspace = getWorkspace();
+      workspace?.sendToBack();
+    },
     changeFillColor: (value: string) => {
       setFillColor(value);
       canvas.getActiveObjects().forEach((object) => {
@@ -65,6 +87,13 @@ const buildEditor = ({
       setStrokeWidth(value);
       canvas.getActiveObjects().forEach((object) => {
         object.set({ strokeWidth: value });
+      });
+      canvas.renderAll();
+    },
+    changeStrokeDashArray: (value: number[]) => {
+      setStrokeDashArray(value);
+      canvas.getActiveObjects().forEach((object) => {
+        object.set({ strokeDashArray: value });
       });
       canvas.renderAll();
     },
@@ -88,6 +117,7 @@ const buildEditor = ({
         fill: fillColor,
         stroke: strokeColor,
         strokeWidth: strokeWidth,
+        strokeDashArray: strokeDashArray,
       });
 
       addToWorkspace(canvasObject);
@@ -100,6 +130,7 @@ const buildEditor = ({
         fill: fillColor,
         stroke: strokeColor,
         strokeWidth: strokeWidth,
+        strokeDashArray: strokeDashArray,
       });
       addToWorkspace(canvasObject);
     },
@@ -109,6 +140,7 @@ const buildEditor = ({
         fill: fillColor,
         stroke: strokeColor,
         strokeWidth: strokeWidth,
+        strokeDashArray: strokeDashArray,
       });
       addToWorkspace(canvasObject);
     },
@@ -118,6 +150,7 @@ const buildEditor = ({
         fill: fillColor,
         stroke: strokeColor,
         strokeWidth: strokeWidth,
+        strokeDashArray: strokeDashArray,
       });
       addToWorkspace(canvasObject);
     },
@@ -136,6 +169,7 @@ const buildEditor = ({
           fill: fillColor,
           stroke: strokeColor,
           strokeWidth: strokeWidth,
+          strokeDashArray: strokeDashArray,
         }
       );
 
@@ -156,6 +190,7 @@ const buildEditor = ({
           fill: fillColor,
           stroke: strokeColor,
           strokeWidth: strokeWidth,
+          strokeDashArray: strokeDashArray,
         }
       );
 
@@ -176,8 +211,19 @@ const buildEditor = ({
       const value = selectedObject.get("stroke") || strokeColor;
       return value;
     },
-    strokeColor,
-    strokeWidth,
+    getActiveStrokeWidth: () => {
+      // TODO: check if the value reached zero to make item visible or not
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return strokeWidth;
+      const value = selectedObject.get("strokeWidth") || strokeWidth;
+      return value;
+    },
+    getActiveStrokeDashArray: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return strokeDashArray;
+      const value = selectedObject.get("strokeDashArray") || STROKE_DASH_ARRAY;
+      return value;
+    },
     canvas,
     selectedObjects,
   };
@@ -190,7 +236,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fillColor, setFillColor] = useState<string>(FILL_COLOR);
   const [strokeColor, setStrokeColor] = useState<string>(STROKE_COLOR);
   const [strokeWidth, setStrokeWidth] = useState<number>(STROKE_WIDTH);
-
+  const [strokeDashArray, setStrokeDashArray] =
+    useState<number[]>(STROKE_DASH_ARRAY);
   useAutoResize({
     canvas,
     container,
@@ -209,10 +256,19 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         strokeWidth,
         setStrokeWidth,
         selectedObjects,
+        strokeDashArray,
+        setStrokeDashArray,
       });
     }
     return undefined;
-  }, [canvas, fillColor, strokeColor, strokeWidth, selectedObjects]);
+  }, [
+    canvas,
+    fillColor,
+    strokeColor,
+    strokeWidth,
+    selectedObjects,
+    strokeDashArray,
+  ]);
 
   const init = useCallback(({ initialCanvas, initialContainer }: InitProps) => {
     fabric.Object.prototype.set({
