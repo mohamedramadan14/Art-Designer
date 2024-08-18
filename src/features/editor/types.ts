@@ -1,4 +1,5 @@
 import { fabric } from "fabric";
+import { ITextboxOptions } from "fabric/fabric-impl";
 export type ActiveTool =
   | "select"
   | "images"
@@ -30,6 +31,8 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  addText: (text: string , options?: ITextboxOptions) => void;
+
   addCircle: () => void;
   addSoftRectangle: () => void;
   addRectangle: () => void;

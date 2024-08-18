@@ -15,6 +15,7 @@ import {
   STROKE_COLOR,
   STROKE_DASH_ARRAY,
   STROKE_WIDTH,
+  TEXT_OPTIONS,
   TRIANGLE_OPTIONS,
 } from "@/features/editor/constants";
 import { useCanvasEvents } from "@/features/editor/hooks/useCanvasEvents";
@@ -57,6 +58,14 @@ const buildEditor = ({
   };
 
   return {
+    addText: (text , options) => {
+      const object = new fabric.Textbox(text, {
+        ...TEXT_OPTIONS,
+        fill: fillColor,
+        ...options
+      });
+      addToWorkspace(object);
+    },
     changeOpacity: (value: number) => {
       canvas.getActiveObjects().forEach((object) => {
         object.set({ opacity: value });
@@ -305,6 +314,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         blur: 5,
       }),
     });
+
     initialCanvas.setWidth(initialContainer.offsetWidth);
     initialCanvas.setHeight(initialContainer.offsetHeight);
     initialCanvas.add(initialWorkSpace);
