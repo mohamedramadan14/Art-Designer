@@ -68,6 +68,13 @@ const buildEditor = ({
   };
 
   return {
+    deleteElement: () => {
+      canvas.getActiveObjects().forEach((object) => {
+        canvas.remove(object);
+        canvas.discardActiveObject();
+        canvas.renderAll()
+      });
+    },
     addText: (text, options) => {
       const object = new fabric.Textbox(text, {
         ...TEXT_OPTIONS,
@@ -113,7 +120,6 @@ const buildEditor = ({
       canvas.renderAll();
     },
     changeFontSize(value: number) {
-      setFontSize(value);
       canvas.getActiveObjects().forEach((object) => {
         if (isTextType(object.type)) {
           object._set("fontSize", value);
@@ -366,6 +372,14 @@ const buildEditor = ({
       // @ts-ignore
       // This is fault TS error due to library
       const value = selectedObject.get("textAlign") || FONT_ALIGNMENT;
+      return value;
+    },
+    getActiveFontSize: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return FONT_SIZE;
+      // @ts-ignore
+      // This is fault TS error due to library
+      const value: number = selectedObject.get("fontSize") || FONT_SIZE;
       return value;
     },
     canvas,

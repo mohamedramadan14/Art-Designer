@@ -10,7 +10,7 @@ import {
   ArrowUp,
   ChevronDown,
 } from "lucide-react";
-import { BsBorderWidth } from "react-icons/bs";
+import { BsBorderWidth, BsTrash } from "react-icons/bs";
 import { RxTransparencyGrid } from "react-icons/rx";
 import { isTextType } from "@/features/editor/utils";
 import {
@@ -19,8 +19,9 @@ import {
   FaStrikethrough,
   FaUnderline,
 } from "react-icons/fa6";
-import { FONT_WEIGHT } from "../constants";
+import { FONT_SIZE, FONT_WEIGHT } from "@/features/editor/constants";
 import { useState } from "react";
+import { FontSizeInput } from "@/features/editor/components/font-size-input";
 
 interface ToolbarProps {
   activeTool: ActiveTool;
@@ -40,6 +41,7 @@ export const Toolbar = ({
   const initialLineThrough = editor?.getActiveLineThrough();
   const initialUnderline = editor?.getActiveUnderline();
   const initialTextAlign = editor?.getActiveTextAlignment();
+  const initialFontSize = editor?.getActiveFontSize() || FONT_SIZE;
 
   const [properties, setProperties] = useState<Record<string, any>>({
     fontWeight: initialFontWeight,
@@ -50,6 +52,7 @@ export const Toolbar = ({
     lineThrough: initialLineThrough,
     underline: initialUnderline,
     textAlign: initialTextAlign,
+    fontSize: initialFontSize,
   });
 
   const selectedObjectType = editor?.selectedObjects[0]?.type;
@@ -90,6 +93,13 @@ export const Toolbar = ({
     editor?.changeTextAlignment(alignment);
     setProperties((prev) => ({ ...prev, textAlign: alignment }));
   };
+
+  const onChangeFontSize = (fontSize: number) => {
+    if (!selectedObject) return;
+    editor?.changeFontSize(fontSize);
+    setProperties((prev) => ({ ...prev, fontSize }));
+  };
+
   if (editor?.selectedObjects.length === 0) {
     return (
       <div
@@ -272,6 +282,14 @@ export const Toolbar = ({
           </Hint>
         </div>
       )}
+      {isTextSelected && (
+        <div className="flex items-center justify-center h-full">
+          <FontSizeInput
+            value={properties.fontSize}
+            onChange={onChangeFontSize}
+          />
+        </div>
+      )}
       <div className="flex items-center justify-center h-full">
         <Hint label="Bring Forward" side="bottom" sideOffset={5}>
           <Button
@@ -303,6 +321,17 @@ export const Toolbar = ({
             className={cn(activeTool === "opacity" && "bg-gray-100")}
           >
             <RxTransparencyGrid className="size-4" />
+          </Button>
+        </Hint>
+      </div>
+      <div className="flex items-center justify-center h-full">
+        <Hint label="Remove" side="bottom" sideOffset={5}>
+          <Button
+            onClick={() => editor?.deleteElement()}
+            size="icon"
+            variant="ghost"
+          >
+            <BsTrash className="size-4" />
           </Button>
         </Hint>
       </div>

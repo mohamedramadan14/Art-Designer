@@ -35,6 +35,7 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  deleteElement: () => void;
   addText: (text: string, options?: ITextboxOptions) => void;
 
   addCircle: () => void;
@@ -71,6 +72,7 @@ export interface Editor {
   getActiveUnderline: () => boolean;
   getActiveLineThrough: () => boolean;
   getActiveTextAlignment: () => string;
+  getActiveFontSize: () => number;
   canvas: fabric.Canvas;
   selectedObjects: fabric.Object[];
 }
