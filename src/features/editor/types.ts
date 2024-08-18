@@ -39,6 +39,7 @@ export interface Editor {
 
   bringForward: () => void;
   sendBackwards: () => void;
+  changeOpacity: (value: number) => void;
   changeFillColor: (value: string) => void;
   changeStrokeColor: (value: string) => void;
   changeStrokeWidth: (value: number) => void;
@@ -48,6 +49,7 @@ export interface Editor {
   getActiveStrokeColor: () => string;
   getActiveStrokeWidth: () => number;
   getActiveStrokeDashArray: () => number[];
+  getActiveOpacity: () => number;
   canvas: fabric.Canvas;
   selectedObjects: fabric.Object[];
 }
