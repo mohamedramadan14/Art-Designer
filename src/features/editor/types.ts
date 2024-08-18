@@ -22,12 +22,16 @@ export type BuildEditorProps = {
   fillColor: string;
   strokeColor: string;
   strokeWidth: number;
+  strokeDashArray: number[];
+  selectedObjects: fabric.Object[];
+  fontFamily: string;
+  fontSize: number;
   setFillColor: (fillColor: string) => void;
   setStrokeColor: (strokeColor: string) => void;
   setStrokeWidth: (strokeWidth: number) => void;
-  selectedObjects: fabric.Object[];
-  strokeDashArray: number[];
   setStrokeDashArray: (strokeDashArray: number[]) => void;
+  setFontFamily: (fontFamily: string) => void;
+  setFontSize: (fontSize: number) => void;
 };
 
 export interface Editor {
@@ -42,6 +46,10 @@ export interface Editor {
 
   bringForward: () => void;
   sendBackwards: () => void;
+
+  changeFontWeight: (value: number) => void;
+  changeFontSize: (value: number) => void;
+  changeFontFamily: (value: string) => void;
   changeOpacity: (value: number) => void;
   changeFillColor: (value: string) => void;
   changeStrokeColor: (value: string) => void;
@@ -53,6 +61,8 @@ export interface Editor {
   getActiveStrokeWidth: () => number;
   getActiveStrokeDashArray: () => number[];
   getActiveOpacity: () => number;
+  getActiveFontFamily: () => string;
+  getActiveFontWeight: () => number;
   canvas: fabric.Canvas;
   selectedObjects: fabric.Object[];
 }

@@ -10,6 +10,9 @@ import {
   CIRCLE_OPTIONS,
   DIAMOND_OPTIONS,
   FILL_COLOR,
+  FONT_FAMILY,
+  FONT_SIZE,
+  FONT_WEIGHT,
   INVERTED_TRIANGLE_OPTIONS,
   RECTANGLE_OPTIONS,
   STROKE_COLOR,
@@ -37,6 +40,10 @@ const buildEditor = ({
   selectedObjects,
   strokeDashArray,
   setStrokeDashArray,
+  fontFamily,
+  setFontFamily,
+  fontSize,
+  setFontSize,
 }: BuildEditorProps): Editor => {
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
@@ -58,17 +65,46 @@ const buildEditor = ({
   };
 
   return {
-    addText: (text , options) => {
+    addText: (text, options) => {
       const object = new fabric.Textbox(text, {
         ...TEXT_OPTIONS,
         fill: fillColor,
-        ...options
+        ...options,
       });
       addToWorkspace(object);
+    },
+    changeFontSize(value: number) {
+      setFontSize(value);
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          object._set("fontSize", value);
+        }
+      });
+
+      canvas.renderAll();
+    },
+    changeFontFamily: (value: string) => {
+      setFontFamily(value);
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // using _set() instead of set to avoid TS errors
+          object._set("fontFamily", value);
+        }
+      });
+      canvas.renderAll();
     },
     changeOpacity: (value: number) => {
       canvas.getActiveObjects().forEach((object) => {
         object.set({ opacity: value });
+      });
+      canvas.renderAll();
+    },
+    changeFontWeight: (value: number) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // using _set() instead of set to avoid TS errors
+          object._set("fontWeight", value);
+        }
       });
       canvas.renderAll();
     },
@@ -245,6 +281,22 @@ const buildEditor = ({
       const value = selectedObject.get("opacity") || 1;
       return value;
     },
+    getActiveFontFamily: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return fontFamily;
+      // @ts-ignore
+      // This is fault TS error due to library
+      const value = selectedObject.get("fontFamily") || fontFamily;
+      return value as string;
+    },
+    getActiveFontWeight: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return FONT_WEIGHT;
+      // @ts-ignore
+      // This is fault TS error due to library
+      const value = selectedObject.get("fontWeight") || FONT_WEIGHT;
+      return value;
+    },
     canvas,
     selectedObjects,
   };
@@ -259,6 +311,9 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [strokeWidth, setStrokeWidth] = useState<number>(STROKE_WIDTH);
   const [strokeDashArray, setStrokeDashArray] =
     useState<number[]>(STROKE_DASH_ARRAY);
+  const [fontFamily, setFontFamily] = useState<string>(FONT_FAMILY);
+  const [fontSize, setFontSize] = useState<number>(FONT_SIZE);
+
   useAutoResize({
     canvas,
     container,
@@ -279,6 +334,10 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         selectedObjects,
         strokeDashArray,
         setStrokeDashArray,
+        fontFamily,
+        setFontFamily,
+        fontSize,
+        setFontSize,
       });
     }
     return undefined;
@@ -289,6 +348,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     strokeWidth,
     selectedObjects,
     strokeDashArray,
+    fontFamily,
+    fontSize,
   ]);
 
   const init = useCallback(({ initialCanvas, initialContainer }: InitProps) => {

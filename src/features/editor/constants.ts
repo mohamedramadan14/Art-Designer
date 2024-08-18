@@ -22,7 +22,31 @@ export const STROKE_WIDTH = 2;
 export const STROKE_DASH_ARRAY = [];
 export const FONT_SIZE = 32;
 export const FONT_FAMILY = "Arial";
+export const FONT_WEIGHT = 400;
 
+export const FONTS = [
+  "Arial",
+  "Arial Black",
+  "Verdana",
+  "Helvetica",
+  "Tahoma",
+  "Trebuchet MS",
+  "Times New Roman",
+  "Georgia",
+  "Garamond",
+  "Courier New",
+  "Brush Script MT",
+  "Palatino",
+  "Bookman",
+  "Comic Sans MS",
+  "Impact",
+  "Lucida Sans Unicode",
+  "Lucida Console",
+  "Geneva",
+  "Monaco",
+  "Andale Mono",
+  "Courier",
+];
 export const TEXT_OPTIONS = {
   type: "textbox",
   left: 100,

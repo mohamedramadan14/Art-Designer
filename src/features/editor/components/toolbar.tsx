@@ -2,10 +2,13 @@ import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 import { ActiveTool, Editor } from "@/features/editor/types";
 import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronDown } from "lucide-react";
 import { BsBorderWidth } from "react-icons/bs";
 import { RxTransparencyGrid } from "react-icons/rx";
-import { isTextType } from "../utils";
+import { isTextType } from "@/features/editor/utils";
+import { FaBold } from "react-icons/fa6";
+import { FONT_WEIGHT } from "../constants";
+import { useState } from "react";
 interface ToolbarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
@@ -19,8 +22,21 @@ export const Toolbar = ({
   const fillColor = editor?.getActiveFillColor();
   const strokeColor = editor?.getActiveStrokeColor();
   const selectedObjectType = editor?.selectedObjects[0]?.type;
+  const fontFamily = editor?.getActiveFontFamily();
+  const initialFontWeight = editor?.getActiveFontWeight() || FONT_WEIGHT;
 
   const isTextSelected = isTextType(selectedObjectType);
+  const [properties , setProperties] = useState<Record<string, any>>({
+    fontWeight: initialFontWeight
+  });
+
+  const toggleBold = () => {
+    const selectedObject = editor?.selectedObjects[0];
+    if (!selectedObject) return;
+    const newFontWeight = properties.fontWeight > 400 ? 400 : 700;
+    editor?.changeFontWeight(newFontWeight);
+    setProperties((prev) => ({ ...prev, fontWeight: newFontWeight }));
+  };
 
   if (editor?.selectedObjects.length === 0) {
     return (
@@ -82,6 +98,38 @@ export const Toolbar = ({
               variant="ghost"
             >
               <BsBorderWidth className="size-4" />
+            </Button>
+          </Hint>
+        </div>
+      )}
+      {isTextSelected && (
+        <div className="flex items-center justify-center h-full">
+          <Hint label="Font" side="bottom" sideOffset={5}>
+            <Button
+              className={cn(
+                "w-auto px-2 text-sm",
+                activeTool === "font" && "bg-gray-100"
+              )}
+              onClick={() => onChangeActiveTool("font")}
+              size="icon"
+              variant="ghost"
+            >
+              <div className="truncate max-w-[100px]">{fontFamily}</div>
+              <ChevronDown className="size-4 ml-2 shrink-0" />
+            </Button>
+          </Hint>
+        </div>
+      )}
+      {isTextSelected && (
+        <div className="flex items-center justify-center h-full">
+          <Hint label="Bold" side="bottom" sideOffset={5}>
+            <Button
+              onClick={toggleBold}
+              size="icon"
+              variant="ghost"
+              className={cn(properties.fontWeight > 400 && "bg-gray-200")}
+            >
+              <FaBold className="size-4" />
             </Button>
           </Hint>
         </div>
