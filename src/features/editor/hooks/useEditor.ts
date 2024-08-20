@@ -68,6 +68,18 @@ const buildEditor = ({
   };
 
   return {
+    addImage: (value:string) =>{
+      fabric.Image.fromURL(value, (image) => {
+        const workspace = getWorkspace();
+        image.scaleToWidth(workspace?.width || 200);
+        image.scaleToHeight(workspace?.height || 200);
+
+        addToWorkspace(image);
+      }, {
+        crossOrigin: "anonymous",
+      })
+      canvas.renderAll();
+    },
     deleteElement: () => {
       canvas.getActiveObjects().forEach((object) => {
         canvas.remove(object);
