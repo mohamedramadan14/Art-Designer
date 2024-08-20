@@ -71,8 +71,8 @@ const buildEditor = ({
     addImage: (value:string) =>{
       fabric.Image.fromURL(value, (image) => {
         const workspace = getWorkspace();
-        image.scaleToWidth(workspace?.width || 200);
-        image.scaleToHeight(workspace?.height || 200);
+        image.scaleToWidth(500);
+        image.scaleToHeight(500);
 
         addToWorkspace(image);
       }, {
