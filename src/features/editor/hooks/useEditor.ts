@@ -1,6 +1,7 @@
 import { useCallback, useState, useMemo } from "react";
 import { fabric } from "fabric";
 import { useAutoResize } from "@/features/editor/hooks/useAutoResize";
+import { useClipboard } from "@/features/editor/hooks/useClipboard";
 import {
   BuildEditorProps,
   Editor,
@@ -33,6 +34,8 @@ interface InitProps {
 }
 
 const buildEditor = ({
+  copy,
+  paste,
   canvas,
   fillColor,
   setFillColor,
@@ -68,6 +71,8 @@ const buildEditor = ({
   };
 
   return {
+    onCopy: () => copy(),
+    onPaste: () => paste(),
     changeImageFilter: (value: string) => {
       const objects = canvas.getActiveObjects();
       objects.forEach((object) => {
@@ -442,6 +447,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fontFamily, setFontFamily] = useState<string>(FONT_FAMILY);
   const [fontSize, setFontSize] = useState<number>(FONT_SIZE);
 
+  const { copy, paste } = useClipboard({ canvas });
+
   useAutoResize({
     canvas,
     container,
@@ -452,6 +459,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
+        copy,
+        paste,
         canvas,
         fillColor,
         setFillColor,
@@ -471,6 +480,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     return undefined;
   }, [
     canvas,
+    copy,
+    paste,
     fillColor,
     strokeColor,
     strokeWidth,

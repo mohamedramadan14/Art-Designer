@@ -32,9 +32,13 @@ export type BuildEditorProps = {
   setStrokeDashArray: (strokeDashArray: number[]) => void;
   setFontFamily: (fontFamily: string) => void;
   setFontSize: (fontSize: number) => void;
+  copy: () => void;
+  paste: () => void;
 };
 
 export interface Editor {
+  onCopy: () => void;
+  onPaste: () => void;
   changeImageFilter: (value: string) => void;
   addImage: (value: string) => void;
   deleteElement: () => void;
