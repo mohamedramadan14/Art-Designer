@@ -57,7 +57,7 @@ export const StrokeWidthSidebar = ({
             size="lg"
             className={cn(
               "w-full h-16 justify-start text-left py-2 px-4",
-              typeValue.length === 0 && "border border-blue-600"
+              typeValue.length === 0 && "border border-orange-600"
             )}
           >
             <div className="w-full border-black border-4 rounded-full" />
@@ -68,7 +68,7 @@ export const StrokeWidthSidebar = ({
             size="lg"
             className={cn(
               "w-full h-16 justify-start text-left py-2 px-4",
-              typeValue.length > 0 && typeValue[0] === 5 && typeValue[1] === 5 && "border border-blue-600"
+              typeValue.length > 0 && typeValue[0] === 5 && typeValue[1] === 5 && "border border-orange-600"
             )}
           >
             <div className="w-full border-black border-4 border-dashed rounded-full" />

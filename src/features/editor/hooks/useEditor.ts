@@ -24,7 +24,7 @@ import {
   TRIANGLE_OPTIONS,
 } from "@/features/editor/constants";
 import { useCanvasEvents } from "@/features/editor/hooks/useCanvasEvents";
-import { isTextType } from "@/features/editor/utils";
+import { createFilter, isTextType } from "@/features/editor/utils";
 import { ITextboxOptions, ITextOptions } from "fabric/fabric-impl";
 
 interface InitProps {
@@ -68,23 +68,41 @@ const buildEditor = ({
   };
 
   return {
-    addImage: (value:string) =>{
-      fabric.Image.fromURL(value, (image) => {
-        const workspace = getWorkspace();
-        image.scaleToWidth(500);
-        image.scaleToHeight(500);
+    changeImageFilter: (value: string) => {
+      const objects = canvas.getActiveObjects();
+      objects.forEach((object) => {
+        if (object.type === "image") {
+          const imageObject = object as fabric.Image;
 
-        addToWorkspace(image);
-      }, {
-        crossOrigin: "anonymous",
-      })
+          const effect = createFilter(value);
+          imageObject.filters = effect ? [effect] : [];
+
+          imageObject.applyFilters();
+          canvas.renderAll();
+        }
+      });
+    },
+    addImage: (value: string) => {
+      fabric.Image.fromURL(
+        value,
+        (image) => {
+          const workspace = getWorkspace();
+          image.scaleToWidth(500);
+          image.scaleToHeight(500);
+
+          addToWorkspace(image);
+        },
+        {
+          crossOrigin: "anonymous",
+        }
+      );
       canvas.renderAll();
     },
     deleteElement: () => {
       canvas.getActiveObjects().forEach((object) => {
         canvas.remove(object);
         canvas.discardActiveObject();
-        canvas.renderAll()
+        canvas.renderAll();
       });
     },
     addText: (text, options) => {
@@ -338,6 +356,19 @@ const buildEditor = ({
       const value = selectedObject.get("opacity") || 1;
       return value;
     },
+    /* getActiveImageFilters: () => {
+      const selectedObject = selectedObjects[0];
+      if (!selectedObject) return [];
+      // @ts-ignore
+      // This is fault TS error due to library
+      let value = []
+      if(selectedObject.type === "image"){
+        // @ts-ignore
+        value = selectedObject.filters || [];
+        console.log(value);
+      }
+      return value;
+    }, */
     getActiveFontFamily: () => {
       const selectedObject = selectedObjects[0];
       if (!selectedObject) return fontFamily;

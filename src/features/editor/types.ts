@@ -35,6 +35,7 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  changeImageFilter: (value: string) => void;
   addImage: (value: string) => void;
   deleteElement: () => void;
   addText: (text: string, options?: ITextboxOptions) => void;
@@ -74,6 +75,7 @@ export interface Editor {
   getActiveLineThrough: () => boolean;
   getActiveTextAlignment: () => string;
   getActiveFontSize: () => number;
+  //getActiveImageFilters: () => string[];
   canvas: fabric.Canvas;
   selectedObjects: fabric.Object[];
 }

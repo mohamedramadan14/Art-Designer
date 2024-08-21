@@ -4,18 +4,21 @@ import { ToolSidebarHeader } from "@/features/editor/components/tool-sidebar-hea
 import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-close";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { FONTS } from "@/features/editor/constants";
-interface FontSidebarProps {
+import { FILTERS } from "@/features/editor/constants";
+import { useState } from "react";
+
+interface FilterSidebarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
   editor: Editor | undefined;
 }
-export const FontSidebar = ({
+export const FilterSidebar = ({
   activeTool,
   onChangeActiveTool,
   editor,
-}: FontSidebarProps) => {
-  const activeFont = editor?.getActiveFontFamily();
+}: FilterSidebarProps) => {
+  const[activeFilters, setActiveFilters] = useState<string[]>([]);
+  //const activeFilters = editor?.getActiveImageFilters() || [] ;
   const onClose = () => {
     onChangeActiveTool("select");
   };
@@ -24,32 +27,30 @@ export const FontSidebar = ({
     <aside
       className={cn(
         "bg-white relative border-r z-[40] w-[360px] h-full flex flex-col",
-        activeTool === "font" ? "visible" : "hidden"
+        activeTool === "filter" ? "visible" : "hidden"
       )}
     >
       <ToolSidebarHeader
-        title="Font"
-        description="Modify Font of your Text elements"
+        title="Filters"
+        description="Adding and Removing Filters to your selected images"
       />
       <ScrollArea>
         <div className="space-y-2 p-4 border-b">
-          {FONTS.map((font) => (
+          {FILTERS.map((filter) => (
             <Button
-              key={font}
+              key={filter}
               variant="secondary"
               size="lg"
               className={cn(
                 "w-full h-16 justify-start text-left",
-                font === activeFont && "border-2 border-orange-600"
+                filter === activeFilters[0] && "border-2 border-orange-600"
               )}
-              style={{
-                fontFamily: font,
-                fontSize: "16px",
-                padding: "8px 16px",
+              onClick={() => {
+                editor?.changeImageFilter(filter)
+                setActiveFilters([filter]);
               }}
-              onClick={() => editor?.changeFontFamily(font)}
             >
-              {font}
+              {filter}
             </Button>
           ))}
         </div>

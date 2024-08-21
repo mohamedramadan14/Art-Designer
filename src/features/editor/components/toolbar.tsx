@@ -22,7 +22,8 @@ import {
 import { FONT_SIZE, FONT_WEIGHT } from "@/features/editor/constants";
 import { useState } from "react";
 import { FontSizeInput } from "@/features/editor/components/font-size-input";
-
+import { TbColorFilter } from "react-icons/tb";
+import { IoColorFilterSharp } from "react-icons/io5";
 interface ToolbarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
@@ -59,6 +60,7 @@ export const Toolbar = ({
   const selectedObject = editor?.selectedObjects[0];
 
   const isTextSelected = isTextType(selectedObjectType);
+  const isImageSelected = selectedObjectType === "image";
 
   const toggleBold = () => {
     if (!selectedObject) return;
@@ -114,23 +116,26 @@ export const Toolbar = ({
       className="shrink-0 h-[56px] border-b bg-white w-full flex
           items-center overflow-x-auto z-[49] p-2 gap-x-2"
     >
-      <div className="flex items-center justify-center h-full">
-        <Hint label="Color" side="bottom" sideOffset={5}>
-          <Button
-            className={cn(activeTool === "fill" && "bg-gray-100")}
-            onClick={() => onChangeActiveTool("fill")}
-            size="icon"
-            variant="ghost"
-          >
-            <div
-              className="rounded-sm size-4 border"
-              style={{
-                backgroundColor: properties.fillColor,
-              }}
-            />
-          </Button>
-        </Hint>
-      </div>
+      {!isImageSelected && (
+        <div className="flex items-center justify-center h-full">
+          <Hint label="Color" side="bottom" sideOffset={5}>
+            <Button
+              className={cn(activeTool === "fill" && "bg-gray-100")}
+              onClick={() => onChangeActiveTool("fill")}
+              size="icon"
+              variant="ghost"
+            >
+              <div
+                className="rounded-sm size-4 border"
+                style={{
+                  backgroundColor: properties.fillColor,
+                }}
+              />
+            </Button>
+          </Hint>
+        </div>
+      )}
+
       {!isTextSelected && (
         <div className="flex items-center justify-center h-full">
           <Hint label="Stroke Color" side="bottom" sideOffset={5}>
@@ -268,6 +273,7 @@ export const Toolbar = ({
           </Hint>
         </div>
       )}
+
       {isTextSelected && (
         <div className="flex items-center justify-center h-full">
           <Hint label="Align Right" side="bottom" sideOffset={5}>
@@ -288,6 +294,20 @@ export const Toolbar = ({
             value={properties.fontSize}
             onChange={onChangeFontSize}
           />
+        </div>
+      )}
+      {isImageSelected && (
+        <div className="flex items-center justify-center h-full">
+          <Hint label="Filters" side="bottom" sideOffset={5}>
+            <Button
+              onClick={() => onChangeActiveTool("filter")}
+              size="icon"
+              variant="ghost"
+              className={cn(activeTool === "filter" && "bg-gray-200")}
+            >
+              <IoColorFilterSharp className="size-4" />
+            </Button>
+          </Hint>
         </div>
       )}
       <div className="flex items-center justify-center h-full">
