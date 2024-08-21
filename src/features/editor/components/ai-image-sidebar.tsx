@@ -53,7 +53,7 @@ export const AIImageSidebar = ({
       <ScrollArea>
         <form onSubmit={onSubmitHandler} className="space-y-6 p-4">
           <Textarea
-            placeholder="Enter prompt like: black forest gateau cake spelling out the words 'FLUX DEV', tasty, food photography, dynamic shot"
+            placeholder="an astronaut riding a horse on mars"
             cols={30}
             rows={10}
             required

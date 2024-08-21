@@ -16,26 +16,39 @@ const app = new Hono()
     async (c) => {
       const { prompt } = c.req.valid("json");
       const input = {
-        prompt: 
-        prompt ||
-          'black forest gateau cake spelling out the words "FLUX DEV", tasty, food photography, dynamic shot',
-        guidance: 3.5,
+        prompt: prompt,
         num_outputs: 1,
-        aspect_ratio: "1:1",
-        output_format: "webp",
-        output_quality: 80,
-        prompt_strength: 0.8,
-        num_inference_steps: 50,
+        output_format: "jpg",
       };
 
-      const output = await replicate.run("black-forest-labs/flux-dev", {
+      const output = await replicate.run("black-forest-labs/flux-schnell", {
         input,
       });
-      console.log(output);
 
       const res = output as Array<string>;
 
       return c.json({ data: res[0] });
+    }
+  )
+
+  .post(
+    "/rm-bg",
+    zValidator("json", z.object({ image: z.string() })),
+    async (c) => {
+      const { image } = c.req.valid("json");
+
+      const input = {
+        image,
+      };
+
+      const output: unknown = await replicate.run(
+        "cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003",
+        { input }
+      );
+
+      const res = output as string;
+
+      return c.json({ data: res });
     }
   );
 

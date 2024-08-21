@@ -22,8 +22,8 @@ import {
 import { FONT_SIZE, FONT_WEIGHT } from "@/features/editor/constants";
 import { useState } from "react";
 import { FontSizeInput } from "@/features/editor/components/font-size-input";
-import { TbColorFilter } from "react-icons/tb";
 import { IoColorFilterSharp } from "react-icons/io5";
+import { BsEraser } from "react-icons/bs";
 interface ToolbarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
@@ -306,6 +306,20 @@ export const Toolbar = ({
               className={cn(activeTool === "filter" && "bg-gray-200")}
             >
               <IoColorFilterSharp className="size-4" />
+            </Button>
+          </Hint>
+        </div>
+      )}
+      {isImageSelected && (
+        <div className="flex items-center justify-center h-full">
+          <Hint label="Remove Background" side="bottom" sideOffset={5}>
+            <Button
+              onClick={() => onChangeActiveTool("remove-bg")}
+              size="icon"
+              variant="ghost"
+              className={cn(activeTool === "remove-bg" && "bg-gray-200")}
+            >
+              <BsEraser className="size-4" />
             </Button>
           </Hint>
         </div>
