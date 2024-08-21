@@ -39,6 +39,8 @@ export type BuildEditorProps = {
 export interface Editor {
   onCopy: () => void;
   onPaste: () => void;
+  enableDrawMode: () => void;
+  disableDrawMode: () => void;
   changeImageFilter: (value: string) => void;
   addImage: (value: string) => void;
   deleteElement: () => void;

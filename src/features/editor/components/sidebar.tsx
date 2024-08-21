@@ -4,12 +4,11 @@ import { SidebarItem } from "@/features/editor/components/sidebar-item";
 import {
   LayoutTemplateIcon,
   ImageIcon,
-  PencilIcon,
-  PresentationIcon,
   SettingsIcon,
   ShapesIcon,
   SparklesIcon,
   TypeIcon,
+  Brush,
 } from "lucide-react";
 import { ActiveTool } from "@/features/editor/types";
 
@@ -38,6 +37,12 @@ export const Sidebar = ({ activeTool, onChangeActiveTool }: SidebarProps) => {
           label="Text"
           isActive={activeTool === "text"}
           onClick={() => onChangeActiveTool("text")}
+        />
+        <SidebarItem
+          icon={Brush}
+          label="Draw"
+          isActive={activeTool === "draw"}
+          onClick={() => onChangeActiveTool("draw")}
         />
         <SidebarItem
           icon={ShapesIcon}
