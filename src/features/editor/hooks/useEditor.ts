@@ -34,6 +34,7 @@ interface InitProps {
 }
 
 const buildEditor = ({
+  autoZoom,
   copy,
   paste,
   canvas,
@@ -73,6 +74,20 @@ const buildEditor = ({
   return {
     onCopy: () => copy(),
     onPaste: () => paste(),
+    getWorkSpace: () => getWorkspace(),
+    changeSize: (size: { width: number; height: number }) => {
+      const workspace = getWorkspace();
+      workspace?.set(size);
+      //canvas.renderAll();
+      autoZoom();
+      // TODO: save for history
+    },
+    changeBackground: (value: string) => {
+      const workspace = getWorkspace();
+      workspace?.set({ fill: value });
+      canvas.renderAll();
+      // TODO: save for history
+    },
     enableDrawMode: () => {
       canvas.discardActiveObject();
       canvas.renderAll();
@@ -228,7 +243,7 @@ const buildEditor = ({
         object.set({ strokeWidth: value });
       });
       canvas.freeDrawingBrush.width = value;
-      
+
       canvas.renderAll();
     },
     changeStrokeDashArray: (value: number[]) => {
@@ -249,8 +264,8 @@ const buildEditor = ({
         }
         object.set({ stroke: value });
       });
-      
-      canvas.freeDrawingBrush.color = value; 
+
+      canvas.freeDrawingBrush.color = value;
       canvas.renderAll();
     },
 
@@ -461,7 +476,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
   const { copy, paste } = useClipboard({ canvas });
 
-  useAutoResize({
+  const { autoZoom } = useAutoResize({
     canvas,
     container,
   });
@@ -471,6 +486,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
+        autoZoom,
         copy,
         paste,
         canvas,
@@ -494,6 +510,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     canvas,
     copy,
     paste,
+    autoZoom,
     fillColor,
     strokeColor,
     strokeWidth,
@@ -515,8 +532,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     });
 
     const initialWorkSpace = new fabric.Rect({
-      width: 900,
-      height: 1200,
+      width: 1200,
+      height: 1500,
       name: "clip",
       fill: "white",
       selectable: false,

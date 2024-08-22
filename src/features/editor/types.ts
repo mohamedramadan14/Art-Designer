@@ -26,6 +26,7 @@ export type BuildEditorProps = {
   selectedObjects: fabric.Object[];
   fontFamily: string;
   fontSize: number;
+  autoZoom: () => void;
   setFillColor: (fillColor: string) => void;
   setStrokeColor: (strokeColor: string) => void;
   setStrokeWidth: (strokeWidth: number) => void;
@@ -39,6 +40,9 @@ export type BuildEditorProps = {
 export interface Editor {
   onCopy: () => void;
   onPaste: () => void;
+  getWorkSpace: () => fabric.Object | undefined;
+  changeSize: (size: { width: number; height: number }) => void;
+  changeBackground: (value: string) => void;
   enableDrawMode: () => void;
   disableDrawMode: () => void;
   changeImageFilter: (value: string) => void;
