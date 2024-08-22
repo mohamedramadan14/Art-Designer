@@ -29,6 +29,7 @@ import {
 import { useCanvasEvents } from "@/features/editor/hooks/useCanvasEvents";
 import { createFilter, isTextType } from "@/features/editor/utils";
 import { useHistory } from "@/features/editor/hooks/use-history";
+import { useHotKeys } from "@/features/editor/hooks/use-hotkeys";
 
 interface InitProps {
   initialCanvas: fabric.Canvas;
@@ -516,6 +517,16 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
   useCanvasEvents({ save, canvas, setSelectedObjects, clearSelectionCallback });
 
+  useHotKeys({
+    canvas,
+    copy,
+    paste,
+    redo,
+    save,
+    undo,
+  });
+
+  
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
