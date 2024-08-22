@@ -41,6 +41,9 @@ export interface Editor {
   onCopy: () => void;
   onPaste: () => void;
   getWorkSpace: () => fabric.Object | undefined;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  autoZoom: () => void;
   changeSize: (size: { width: number; height: number }) => void;
   changeBackground: (value: string) => void;
   enableDrawMode: () => void;
