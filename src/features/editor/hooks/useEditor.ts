@@ -7,6 +7,7 @@ import {
   Editor,
   EditorHookProps,
 } from "@/features/editor/types";
+
 import {
   CIRCLE_OPTIONS,
   DIAMOND_OPTIONS,
@@ -17,6 +18,7 @@ import {
   FONT_STYLE,
   FONT_WEIGHT,
   INVERTED_TRIANGLE_OPTIONS,
+  JSON_KEYS_HISTORY,
   RECTANGLE_OPTIONS,
   STROKE_COLOR,
   STROKE_DASH_ARRAY,
@@ -26,7 +28,7 @@ import {
 } from "@/features/editor/constants";
 import { useCanvasEvents } from "@/features/editor/hooks/useCanvasEvents";
 import { createFilter, isTextType } from "@/features/editor/utils";
-import { ITextboxOptions, ITextOptions } from "fabric/fabric-impl";
+import { useHistory } from "@/features/editor/hooks/use-history";
 
 interface InitProps {
   initialCanvas: fabric.Canvas;
@@ -34,6 +36,11 @@ interface InitProps {
 }
 
 const buildEditor = ({
+  save,
+  undo,
+  redo,
+  canUndo,
+  canRedo,
   autoZoom,
   copy,
   paste,
@@ -72,6 +79,10 @@ const buildEditor = ({
   };
 
   return {
+    onUndo: () => undo(),
+    onRedo: () => redo(),
+    canUndo: () => canUndo(),
+    canRedo: () => canRedo(),
     onCopy: () => copy(),
     onPaste: () => paste(),
     getWorkSpace: () => getWorkspace(),
@@ -80,7 +91,10 @@ const buildEditor = ({
       let zoomRatio = canvas.getZoom();
       zoomRatio += 0.05;
       const center = canvas.getCenter();
-      canvas.zoomToPoint(new fabric.Point(center.left, center.top), zoomRatio > 0.8 ? 0.8 : zoomRatio);
+      canvas.zoomToPoint(
+        new fabric.Point(center.left, center.top),
+        zoomRatio > 0.8 ? 0.8 : zoomRatio
+      );
     },
     zoomOut: () => {
       let zoomRatio = canvas.getZoom();
@@ -96,13 +110,13 @@ const buildEditor = ({
       workspace?.set(size);
       //canvas.renderAll();
       autoZoom();
-      // TODO: save for history
+      save();
     },
     changeBackground: (value: string) => {
       const workspace = getWorkspace();
       workspace?.set({ fill: value });
       canvas.renderAll();
-      // TODO: save for history
+      save();
     },
     enableDrawMode: () => {
       canvas.discardActiveObject();
@@ -490,6 +504,9 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fontFamily, setFontFamily] = useState<string>(FONT_FAMILY);
   const [fontSize, setFontSize] = useState<number>(FONT_SIZE);
 
+  const { save, canRedo, canUndo, canvasHistory, redo, undo, setHistoryIndex } =
+    useHistory({ canvas });
+
   const { copy, paste } = useClipboard({ canvas });
 
   const { autoZoom } = useAutoResize({
@@ -497,11 +514,16 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     container,
   });
 
-  useCanvasEvents({ canvas, setSelectedObjects, clearSelectionCallback });
+  useCanvasEvents({ save, canvas, setSelectedObjects, clearSelectionCallback });
 
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
+        save,
+        undo,
+        redo,
+        canUndo,
+        canRedo,
         autoZoom,
         copy,
         paste,
@@ -534,40 +556,57 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     strokeDashArray,
     fontFamily,
     fontSize,
+    save,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   ]);
 
-  const init = useCallback(({ initialCanvas, initialContainer }: InitProps) => {
-    fabric.Object.prototype.set({
-      cornerColor: "#FFF",
-      cornerStyle: "circle",
-      borderColor: "#3b82f6",
-      borderScaleFactor: 1.5,
-      transparentCorners: false,
-      borderOpacityWhenMoving: 1,
-      cornerStrokeColor: "#3b82f6",
-    });
+  const init = useCallback(
+    ({ initialCanvas, initialContainer }: InitProps) => {
+      fabric.Object.prototype.set({
+        cornerColor: "#FFF",
+        cornerStyle: "circle",
+        borderColor: "#3b82f6",
+        borderScaleFactor: 1.5,
+        transparentCorners: false,
+        borderOpacityWhenMoving: 1,
+        cornerStrokeColor: "#3b82f6",
+      });
 
-    const initialWorkSpace = new fabric.Rect({
-      width: 1200,
-      height: 1500,
-      name: "clip",
-      fill: "white",
-      selectable: false,
-      hasControls: false,
-      shadow: new fabric.Shadow({
-        color: "rgba(0,0,0,0.8)",
-        blur: 5,
-      }),
-    });
+      const initialWorkSpace = new fabric.Rect({
+        width: 1200,
+        height: 1500,
+        name: "clip",
+        fill: "white",
+        selectable: false,
+        hasControls: false,
+        shadow: new fabric.Shadow({
+          color: "rgba(0,0,0,0.8)",
+          blur: 5,
+        }),
+      });
 
-    initialCanvas.setWidth(initialContainer.offsetWidth);
-    initialCanvas.setHeight(initialContainer.offsetHeight);
-    initialCanvas.add(initialWorkSpace);
-    initialCanvas.centerObject(initialWorkSpace);
-    initialCanvas.clipPath = initialWorkSpace;
-    setCanvas(initialCanvas);
-    setContainer(initialContainer);
-  }, []);
+      initialCanvas.setWidth(initialContainer.offsetWidth);
+      initialCanvas.setHeight(initialContainer.offsetHeight);
+
+      initialCanvas.add(initialWorkSpace);
+      initialCanvas.centerObject(initialWorkSpace);
+      initialCanvas.clipPath = initialWorkSpace;
+      setCanvas(initialCanvas);
+      setContainer(initialContainer);
+
+      const currentCanvasState = JSON.stringify(
+        initialCanvas.toJSON(JSON_KEYS_HISTORY)
+      );
+
+      canvasHistory.current = [currentCanvasState];
+      setHistoryIndex(0);
+    },
+    // No need for this as these come from useRef,useState but to avoid linting warnings
+    [canvasHistory, setHistoryIndex]
+  );
 
   return {
     init,

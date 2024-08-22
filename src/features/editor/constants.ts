@@ -158,3 +158,15 @@ export const FILTERS = [
   "saturation",
   "gamma",
 ];
+
+
+export const JSON_KEYS_HISTORY = [
+  "name",
+  "gradientAngel",
+  "selectable",
+  "hasControls",
+  "linkData",
+  "editable",
+  "extension",
+  "extensionType",
+];

@@ -17,6 +17,7 @@ export type ActiveTool =
   | "remove-bg"
   | "templates";
 
+
 export type BuildEditorProps = {
   canvas: fabric.Canvas;
   fillColor: string;
@@ -26,6 +27,11 @@ export type BuildEditorProps = {
   selectedObjects: fabric.Object[];
   fontFamily: string;
   fontSize: number;
+  save: (skip?: boolean) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
   autoZoom: () => void;
   setFillColor: (fillColor: string) => void;
   setStrokeColor: (strokeColor: string) => void;
@@ -38,6 +44,10 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  onUndo: () => void;
+  onRedo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
   onCopy: () => void;
   onPaste: () => void;
   getWorkSpace: () => fabric.Object | undefined;

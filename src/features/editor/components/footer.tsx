@@ -33,7 +33,7 @@ export const Footer = ({ editor }: FooterProps) => {
           <BsZoomOut className="size-4" />
         </Button>
       </Hint>
-      <Hint label="Reset" side="top" sideOffset={10}>
+      <Hint label="Reset Zoom" side="top" sideOffset={10}>
         <Button
           className="h-full"
           onClick={() => editor?.autoZoom()}
