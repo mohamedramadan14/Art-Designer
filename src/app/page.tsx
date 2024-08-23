@@ -1,12 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { auth } from "@/auth";
 
 
-export default function Home() {
+export default async function Home() {
+  const session  = await auth();
   return (
     <>
     <div>Hello, My Friend</div>
     <div>
-      <Button variant="default" size="lg">Button</Button>
+      {JSON.stringify(session)}
     </div>
      </>
   );
