@@ -1,5 +1,6 @@
 import { RGBColor } from "react-color";
 import { fabric } from "fabric";
+import { uuid } from "uuidv4";
 
 export const isTextType = (type: string | undefined) => {
   return type === "text" || type === "i-text" || type === "textbox";
@@ -137,13 +138,13 @@ export const createFilter = (value: string) => {
       affect = new fabric.Image.filters.Gamma({
         gamma: [1, 0.5, 2.2],
       });
-    
+
     case "saturation":
       // @ts-ignore
       // This is because types of fabric.Image.filters not maintained correctly
       affect = new fabric.Image.filters.Saturation({
         saturation: 0.5,
-      })  
+      });
       break;
 
     default:
@@ -152,4 +153,51 @@ export const createFilter = (value: string) => {
   }
 
   return affect;
+};
+
+/* export const downloadFileSvg = (fileUrl:string) =>{
+  const blob = new Blob([fileUrl] , { type: `image/svg+xml` });
+  const url = URL.createObjectURL(blob);
+
+  const anchorElement = document.createElement("a");
+  anchorElement.href = url;
+
+  anchorElement.download = `${uuid()}.svg`;
+  document.body.appendChild(anchorElement);
+  anchorElement.click();
+  anchorElement.remove();
+
+} */
+
+export const downloadFileSvg = (svgData: string, filename: string) => {
+  const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
+export const downloadFile = (fileUrl: string, type: string) => {
+  const anchorElement = document.createElement("a");
+
+  anchorElement.href = fileUrl;
+  anchorElement.download = `${uuid()}.${type}`;
+  document.body.appendChild(anchorElement);
+  anchorElement.click();
+  anchorElement.remove();
+};
+
+export const transformTextElementsOnSave = (objects: any) => {
+  if (!objects) return;
+
+  objects.forEach((item: any) => {
+    if (item.objects) {
+      transformTextElementsOnSave(item.objects);
+    } else {
+      item.type === "text" && (item.type = "textbox");
+    }
+  });
 };

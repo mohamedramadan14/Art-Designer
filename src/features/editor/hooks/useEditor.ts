@@ -27,9 +27,17 @@ import {
   TRIANGLE_OPTIONS,
 } from "@/features/editor/constants";
 import { useCanvasEvents } from "@/features/editor/hooks/useCanvasEvents";
-import { createFilter, isTextType } from "@/features/editor/utils";
-import { useHistory } from "@/features/editor/hooks/use-history";
-import { useHotKeys } from "@/features/editor/hooks/use-hotkeys";
+import {
+  createFilter,
+  downloadFile,
+  downloadFileSvg,
+  isTextType,
+  transformTextElementsOnSave,
+} from "@/features/editor/utils";
+import { useHistory } from "@/features/editor/hooks/useHistory";
+import { useHotKeys } from "@/features/editor/hooks/useHotkeys";
+import { useWindowEvents } from "@/features/editor/hooks/useWindowEvents";
+import { uuid } from "uuidv4";
 
 interface InitProps {
   initialCanvas: fabric.Canvas;
@@ -60,6 +68,74 @@ const buildEditor = ({
   fontSize,
   setFontSize,
 }: BuildEditorProps): Editor => {
+  const generateSaveOptions = () => {
+    const workspace = getWorkspace() as fabric.Rect;
+    return {
+      width: workspace.width ?? canvas.getWidth(),
+      height: workspace.height ?? canvas.getHeight(),
+      left: workspace.left ?? 0,
+      top: workspace.top ?? 0,
+    };
+  };
+
+  const saveAsPng = () => {
+    const options = generateSaveOptions();
+
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    const dataUrl = canvas.toDataURL(options);
+
+    downloadFile(dataUrl, "png");
+    autoZoom();
+  };
+
+  const saveAsJpg = () => {
+    const options = generateSaveOptions();
+
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    const dataUrl = canvas.toDataURL(options);
+
+    downloadFile(dataUrl, "jpg");
+    autoZoom();
+  };
+
+  const saveAsSvg = () => {
+    const options = generateSaveOptions();
+
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+
+    // Optionally, clip to workspace if needed (Fabric.js doesn't have clipTo by default)
+    const svgData = canvas.toSVG({
+      viewBox: {
+        x: options.left,
+        y: options.top,
+        width: options.width,
+        height: options.height,
+      },
+      width: options.width,
+      height: options.height,
+    });
+
+    downloadFileSvg(svgData, `${uuid()}.svg`);
+
+    autoZoom();
+  };
+
+  const saveAsJson = async () => {
+    const dataUrl = canvas.toJSON(JSON_KEYS_HISTORY);
+    await transformTextElementsOnSave(dataUrl.objects);
+    const fileStringOptions = `data:text/json;charset=utf-8,${encodeURIComponent(
+      JSON.stringify(dataUrl, null, "\t")
+    )}`;
+    downloadFile(fileStringOptions, "json");
+  };
+
+  const loadAsJson = (json: string) => {
+    const data = JSON.parse(json);
+    canvas.loadFromJSON(data, () => {
+      autoZoom();
+      //canvas.renderAll();
+    });
+  };
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
   };
@@ -80,6 +156,11 @@ const buildEditor = ({
   };
 
   return {
+    saveAsPng,
+    saveAsJpg,
+    saveAsSvg,
+    saveAsJson,
+    loadAsJson,
     onUndo: () => undo(),
     onRedo: () => redo(),
     canUndo: () => canUndo(),
@@ -515,6 +596,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     container,
   });
 
+  useWindowEvents();
   useCanvasEvents({ save, canvas, setSelectedObjects, clearSelectionCallback });
 
   useHotKeys({
@@ -526,7 +608,6 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     undo,
   });
 
-  
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({

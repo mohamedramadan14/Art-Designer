@@ -17,7 +17,6 @@ export type ActiveTool =
   | "remove-bg"
   | "templates";
 
-
 export type BuildEditorProps = {
   canvas: fabric.Canvas;
   fillColor: string;
@@ -44,6 +43,11 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  saveAsPng: () => void;
+  saveAsSvg: () => void;
+  saveAsJpg: () => void;
+  saveAsJson: () => void;
+  loadAsJson: (json: string) => void;
   onUndo: () => void;
   onRedo: () => void;
   canUndo: () => boolean;
