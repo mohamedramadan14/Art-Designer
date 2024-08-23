@@ -58,7 +58,7 @@ export const Editor = () => {
     [activeTool, editor]
   );
   useEffect(() => {
-    console.log("init");
+    
     const canvas = new fabric.Canvas(canvasRef.current, {
       controlsAboveOverlay: true,
       preserveObjectStacking: true,

@@ -24,12 +24,10 @@ export const SettingsSidebar = ({
   const workspace = editor?.getWorkSpace();
 
   const initialWidth = useMemo(() => {
-    console.log(workspace?.width);
     return `${workspace?.width ?? 0}`;
   }, [workspace]);
 
   const initialHeight = useMemo(() => {
-    console.log(workspace?.height);
     return `${workspace?.height ?? 0}`;
   }, [workspace]);
 
