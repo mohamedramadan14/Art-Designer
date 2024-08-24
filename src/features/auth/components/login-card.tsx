@@ -1,5 +1,7 @@
 "use client";
 
+import { Separator } from "@/components/ui/separator";
+import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { FaGithub } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
@@ -9,11 +11,23 @@ import {
   CardTitle,
   CardContent,
   CardHeader,
-  CardFooter,
   CardDescription,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { TriangleAlert } from "lucide-react";
 export const LoginCard = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const params = useSearchParams();
+  const error = params.get("error");
+
+  const onCredentialLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    signIn("credentials", { email, password, callbackUrl: "/" });
+  };
+
   const onProviderSignIn = (provider: "google" | "github") => {
     signIn(provider, { callbackUrl: "/" });
   };
@@ -26,7 +40,39 @@ export const LoginCard = () => {
           Login with your email, or use Google or GitHub.
         </CardDescription>
       </CardHeader>
+      {!!error && (
+        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+          <TriangleAlert className="size-6" />
+          <p>Invalid email or password</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-0">
+        <form onSubmit={onCredentialLogin} className="space-y-2.5">
+          <Input
+            className="focus-visible:ring-orange-500 focus-visible:ring-offset-0"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            required
+          />
+          <Input
+            className="focus-visible:ring-orange-500 focus-visible:ring-offset-0"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+          />
+          <Button
+            type="submit"
+            className="w-full bg-orange-400 hover:bg-orange-500"
+            size="lg"
+          >
+            Continue
+          </Button>
+        </form>
+        <Separator />
         <div className="gap-y-4 flex flex-col">
           <Button
             onClick={() => onProviderSignIn("github")}

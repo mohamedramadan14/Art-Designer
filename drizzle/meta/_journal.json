@@ -8,6 +8,13 @@
       "when": 1724422371136,
       "tag": "0000_chilly_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1724508688817,
+      "tag": "0001_swift_forge",
+      "breakpoints": true
     }
   ]
 }
