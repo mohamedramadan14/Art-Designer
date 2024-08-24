@@ -1,7 +1,7 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { FaGithub } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,17 @@ import { TriangleAlert } from "lucide-react";
 export const LoginCard = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const params = useSearchParams();
-  const error = params.get("error");
+  const [error, setError] = useState<string | null>(
+    useSearchParams().get("error")
+  );
+
+  useEffect(() => {
+    const time = setTimeout(() => {
+      setError(null);
+    }, 5000);
+
+    return () => clearTimeout(time);
+  }, [error]);
 
   const onCredentialLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,7 +49,7 @@ export const LoginCard = () => {
           Login with your email, or use Google or GitHub.
         </CardDescription>
       </CardHeader>
-      {!!error && (
+      {error && (
         <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
           <TriangleAlert className="size-6" />
           <p>Invalid email or password</p>

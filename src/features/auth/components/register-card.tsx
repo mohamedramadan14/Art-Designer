@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { useRegister } from "@/features/auth/hooks/use-register";
 import { TriangleAlert } from "lucide-react";
@@ -23,7 +23,15 @@ export const RegisterCard = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const time = setTimeout(() => {
+      setError(null);
+    }, 5000);
+
+    return () => clearTimeout(time);
+  }, [error]);
   const mutation = useRegister();
   const onCredentialRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,6 +40,9 @@ export const RegisterCard = () => {
       {
         onSuccess: () => {
           signIn("credentials", { email, password, callbackUrl: "/" });
+        },
+        onError: (error) => {
+          setError(error.message);
         },
       }
     );
@@ -48,7 +59,7 @@ export const RegisterCard = () => {
           Create an account with your email, Google or GitHub.
         </CardDescription>
       </CardHeader>
-      {!!mutation.error && (
+      {error && (
         <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
           <TriangleAlert className="size-6" />
           <p>Something went wrong</p>
