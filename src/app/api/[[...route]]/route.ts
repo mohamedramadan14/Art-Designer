@@ -1,18 +1,29 @@
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { handle } from "hono/vercel";
 import images from "./images";
 import ai from "./ai";
 import users from "./users";
 
+import { AuthConfig, initAuthConfig } from "@hono/auth-js";
+import { authConfig } from "@/auth.config";
 // We use "nodejs" instead of edge to be able to deploy it everywhere
 export const runtime = "nodejs"
 
+const getAuthConfig = (c: Context): AuthConfig => {
+    return {
+        ...authConfig
+    }
+}
+
 const app = new Hono().basePath("/api");
 
+
+app.use("*" , initAuthConfig(getAuthConfig))
 const routes = app
     .route("/images" , images)
     .route("/ai" , ai)
     .route("/users" , users)
+    
 
 export const GET = handle(app)
 export const POST = handle(app)

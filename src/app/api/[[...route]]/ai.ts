@@ -2,11 +2,12 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { replicate } from "@/lib/replicate";
+import { verifyAuth } from "@hono/auth-js";
 
 const app = new Hono()
-  // TODO : user verification
   .post(
     "/generate",
+    verifyAuth(),
     zValidator(
       "json",
       z.object({
@@ -33,6 +34,7 @@ const app = new Hono()
 
   .post(
     "/rm-bg",
+    verifyAuth(),
     zValidator("json", z.object({ image: z.string() })),
     async (c) => {
       const { image } = c.req.valid("json");
