@@ -22,8 +22,13 @@ import { AIImageSidebar } from "@/features/editor/components/ai-image-sidebar";
 import { RemoveBgSidebar } from "@/features/editor/components/remove-bg-sidebar";
 import { DrawSidebar } from "@/features/editor/components/draw-sidebar";
 import { SettingsSidebar } from "./settings-sidebar";
+import { ProjectResponseType } from "@/features/projects/query/use-get-project";
 
-export const Editor = () => {
+interface EditorProps {
+  initialData: ProjectResponseType["data"];
+}
+
+export const Editor = ({ initialData }: EditorProps) => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
 
   const onClearSelection = useCallback(() => {
@@ -58,7 +63,6 @@ export const Editor = () => {
     [activeTool, editor]
   );
   useEffect(() => {
-    
     const canvas = new fabric.Canvas(canvasRef.current, {
       controlsAboveOverlay: true,
       preserveObjectStacking: true,
@@ -79,7 +83,11 @@ export const Editor = () => {
    */
   return (
     <div className="h-full flex flex-col">
-      <Navbar editor={editor} activeTool={activeTool} onChangeActiveTool={onChangeActiveTool} />
+      <Navbar
+        editor={editor}
+        activeTool={activeTool}
+        onChangeActiveTool={onChangeActiveTool}
+      />
       <div className="absolute h-[calc(100%-68px)] w-full top-[68px] flex">
         <Sidebar
           activeTool={activeTool}
