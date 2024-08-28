@@ -1,17 +1,13 @@
-import { auth } from "@/auth";
 import { protectByAuth } from "@/features/auth/utils";
+import { Banner } from "./banner";
 
 
 export default async function Home() {
   await protectByAuth();
-  const session = await auth();
   
   return (
-    <>
-    <div>Hello, My Friend</div>
-    <div>
-       You are logged in {JSON.stringify(session)}
+    <div className="flex flex-col space-y-6 max-w-screen-xl mx-auto pb-10">
+        <Banner />
     </div>
-     </>
   );
 }
