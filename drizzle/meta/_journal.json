@@ -15,6 +15,13 @@
       "when": 1724508688817,
       "tag": "0001_swift_forge",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1724863659852,
+      "tag": "0002_blushing_true_believers",
+      "breakpoints": true
     }
   ]
 }
