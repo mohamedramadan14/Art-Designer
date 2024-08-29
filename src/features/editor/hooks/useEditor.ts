@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useRef } from "react";
 import { fabric } from "fabric";
 import { useAutoResize } from "@/features/editor/hooks/useAutoResize";
 import { useClipboard } from "@/features/editor/hooks/useClipboard";
@@ -38,6 +38,7 @@ import { useHistory } from "@/features/editor/hooks/useHistory";
 import { useHotKeys } from "@/features/editor/hooks/useHotkeys";
 import { useWindowEvents } from "@/features/editor/hooks/useWindowEvents";
 import { uuid } from "uuidv4";
+import { useLoadState } from "@/features/editor/hooks/useLoadState";
 
 interface InitProps {
   initialCanvas: fabric.Canvas;
@@ -573,7 +574,18 @@ const buildEditor = ({
     selectedObjects,
   };
 };
-export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
+export const useEditor = ({
+  clearSelectionCallback,
+  saveCallback,
+  defaultState,
+  defaultHeight,
+  defaultWidth,
+}: EditorHookProps) => {
+  // to avoid conflicting and triggering re-rendering that will lead to lose current progress
+  const initialState = useRef(defaultState);
+  const initialHeight = useRef(defaultHeight);
+  const initialWidth = useRef(defaultWidth);
+
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
@@ -587,7 +599,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fontSize, setFontSize] = useState<number>(FONT_SIZE);
 
   const { save, canRedo, canUndo, canvasHistory, redo, undo, setHistoryIndex } =
-    useHistory({ canvas });
+    useHistory({ canvas, saveCallback });
 
   const { copy, paste } = useClipboard({ canvas });
 
@@ -606,6 +618,14 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     redo,
     save,
     undo,
+  });
+
+  useLoadState({
+    canvas,
+    autoZoom,
+    initialState,
+    canvasHistory,
+    setHistoryIndex,
   });
 
   const editor = useMemo(() => {
@@ -668,8 +688,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       });
 
       const initialWorkSpace = new fabric.Rect({
-        width: 1200,
-        height: 1500,
+        width: initialWidth.current || 900,
+        height: initialHeight.current || 1500,
         name: "clip",
         fill: "white",
         selectable: false,

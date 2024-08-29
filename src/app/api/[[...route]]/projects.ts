@@ -7,6 +7,40 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 const app = new Hono()
+  .patch(
+    "/:projectId",
+    verifyAuth(),
+    zValidator("param", z.object({ projectId: z.string() })),
+    zValidator(
+      "json",
+      projectInsertSchema
+        .partial()
+        .omit({ id: true, userId: true, createdAt: true, updatedAt: true })
+    ),
+    async (c) => {
+      const auth = c.get("authUser");
+      const { projectId } = c.req.valid("param");
+      const values = c.req.valid("json");
+
+      if (!auth.token?.id) {
+        return c.json({ error: "unauthorized" }, 401);
+      }
+
+      const updatedProject = await db
+        .update(projects)
+        .set({ ...values, updatedAt: new Date() })
+        .where(
+          and(eq(projects.id, projectId), eq(projects.userId, auth.token.id))
+        )
+        .returning();
+
+      if (updatedProject.length === 0) {
+        return c.json({ error: "project does not exist or unauthorized" }, 400);
+      }
+
+      return c.json({ data: updatedProject[0] });
+    }
+  )
   .get(
     "/:projectId",
     verifyAuth(),

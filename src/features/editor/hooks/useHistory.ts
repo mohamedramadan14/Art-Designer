@@ -4,8 +4,13 @@ import { JSON_KEYS_HISTORY } from "@/features/editor/constants";
 
 interface UseHistoryProps {
   canvas: fabric.Canvas | null;
+  saveCallback?: (values: {
+    json: string;
+    height: number;
+    width: number;
+  }) => void;
 }
-export const useHistory = ({ canvas }: UseHistoryProps) => {
+export const useHistory = ({ canvas, saveCallback }: UseHistoryProps) => {
   const [historyIndex, setHistoryIndex] = useState<number>(0);
   const canvasHistory = useRef<string[]>([]);
   // skipSave: use to avoid saving on every change so fill history infinitely in undo and redo
@@ -32,10 +37,14 @@ export const useHistory = ({ canvas }: UseHistoryProps) => {
         canvasHistory.current.push(currentStateAsString);
         setHistoryIndex(canvasHistory.current.length - 1);
       }
-
-      // TODO: save Callback
+      const workspace = canvas
+        .getActiveObjects()
+        .find((item) => item.name === "clip");
+      const height = workspace?.get("height") || 0;
+      const width = workspace?.get("width") || 0;
+      saveCallback?.({ json: currentStateAsString, height, width });
     },
-    [canvas]
+    [canvas, saveCallback]
   );
 
   const undo = useCallback(() => {

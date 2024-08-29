@@ -23,12 +23,24 @@ import { RemoveBgSidebar } from "@/features/editor/components/remove-bg-sidebar"
 import { DrawSidebar } from "@/features/editor/components/draw-sidebar";
 import { SettingsSidebar } from "./settings-sidebar";
 import { ProjectResponseType } from "@/features/projects/query/use-get-project";
+import { useUpdateProject } from "@/features/projects/query/use-update-project";
 
 interface EditorProps {
   initialData: ProjectResponseType["data"];
 }
 
 export const Editor = ({ initialData }: EditorProps) => {
+  const { mutate } = useUpdateProject(initialData.id);
+
+  const debouncedSave = useCallback(
+    (values: { json: string; height: number; width: number }) => {
+      // Add debouncing
+      console.log("Saving...");
+      mutate(values);
+    },
+    [mutate]
+  );
+
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
 
   const onClearSelection = useCallback(() => {
@@ -38,7 +50,11 @@ export const Editor = ({ initialData }: EditorProps) => {
   }, [activeTool]);
 
   const { init, editor } = useEditor({
+    defaultState: initialData.json,
+    defaultWidth: initialData.width,
+    defaultHeight: initialData.height,
     clearSelectionCallback: onClearSelection,
+    saveCallback: debouncedSave,
   });
 
   const canvasRef = useRef<any>(null);
