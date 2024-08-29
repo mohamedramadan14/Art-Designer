@@ -24,6 +24,7 @@ import { DrawSidebar } from "@/features/editor/components/draw-sidebar";
 import { SettingsSidebar } from "./settings-sidebar";
 import { ProjectResponseType } from "@/features/projects/query/use-get-project";
 import { useUpdateProject } from "@/features/projects/query/use-update-project";
+import debounce from "lodash.debounce";
 
 interface EditorProps {
   initialData: ProjectResponseType["data"];
@@ -32,12 +33,13 @@ interface EditorProps {
 export const Editor = ({ initialData }: EditorProps) => {
   const { mutate } = useUpdateProject(initialData.id);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSave = useCallback(
-    (values: { json: string; height: number; width: number }) => {
+    debounce((values: { json: string; height: number; width: number }) => {
       // Add debouncing
       console.log("Saving...");
       mutate(values);
-    },
+    }, 750),
     [mutate]
   );
 
@@ -100,6 +102,7 @@ export const Editor = ({ initialData }: EditorProps) => {
   return (
     <div className="h-full flex flex-col">
       <Navbar
+        id={initialData.id}
         editor={editor}
         activeTool={activeTool}
         onChangeActiveTool={onChangeActiveTool}

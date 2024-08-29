@@ -15,6 +15,7 @@ export const useGetProject = (projectId: string) => {
         throw new Error("Failed to fetch project");
       }
       const { data } = await response.json();
+      console.log(data);
       return data;
     },
   });

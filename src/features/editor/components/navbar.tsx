@@ -13,14 +13,17 @@ import { UserButton } from "@/features/auth/components/user-button";
 import { Logo } from "@/features/editor/components/logo";
 import { ActiveTool, Editor } from "@/features/editor/types";
 import { cn } from "@/lib/utils";
+import { useMutationState } from "@tanstack/react-query";
 import {
   ChevronDown,
   Download,
+  Loader,
   MousePointerClick,
   Redo2,
   Undo2,
 } from "lucide-react";
-import { BsCloudCheck } from "react-icons/bs";
+
+import { BsCloudCheck, BsCloudSlash } from "react-icons/bs";
 import { CiFileOn } from "react-icons/ci";
 import { useFilePicker } from "use-file-picker";
 
@@ -28,13 +31,28 @@ interface NavbarProps {
   editor: Editor | undefined;
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
+  id: string;
 }
 // TODO: check property modal=false
 export const Navbar = ({
+  id,
   editor,
   onChangeActiveTool,
   activeTool,
 }: NavbarProps) => {
+  const data = useMutationState({
+    filters: {
+      mutationKey: ["project", { projectId: id }],
+      exact: true,
+    },
+    select: (mutation) => mutation.state.status,
+  });
+
+  const currentStatus = data[data.length - 1];
+
+  const isError = currentStatus === "error";
+  const isPending = currentStatus === "pending";
+  
   const { openFilePicker } = useFilePicker({
     accept: ".json",
     onFilesSuccessfullySelected: ({ plainFiles }: any) => {
@@ -108,10 +126,24 @@ export const Navbar = ({
           </Button>
         </Hint>
         <Separator orientation="vertical" className="mx-2" />
+        {!isPending && !isError && (  
         <div className="flex items-center gap-x-2">
           <BsCloudCheck className="size-4 text-muted-foreground" />
           <p className="text-xs text-muted-foreground">Saved</p>
         </div>
+        )}
+        {!isPending && isError && (  
+        <div className="flex items-center gap-x-2">
+          <BsCloudSlash  className="size-4 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground">Offline</p>
+        </div>
+        )}
+        {isPending && (  
+        <div className="flex items-center gap-x-2">
+          <Loader  className="size-4 animate-spin text-muted-foreground" />
+          <p className="text-xs text-muted-foreground">Saving...</p>
+        </div>
+        )}
       </div>
       <div className="ml-auto flex items-center gap-x-4">
         <DropdownMenu modal={false}>

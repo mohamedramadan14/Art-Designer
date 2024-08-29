@@ -20,7 +20,7 @@ export const useLoadState = ({
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (!initialState.current && initialState?.current && canvas) {
+    if (!initialized.current && initialState?.current && canvas) {
       const data = JSON.parse(initialState.current);
 
       canvas.loadFromJSON(data, () => {
@@ -31,7 +31,6 @@ export const useLoadState = ({
         autoZoom();
       });
       initialized.current = true;
-      canvas.renderAll();
     }
   }, [canvas, autoZoom, initialState, canvasHistory, setHistoryIndex]);
 };

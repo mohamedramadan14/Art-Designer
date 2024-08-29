@@ -688,8 +688,8 @@ export const useEditor = ({
       });
 
       const initialWorkSpace = new fabric.Rect({
-        width: initialWidth.current || 900,
-        height: initialHeight.current || 1500,
+        width: initialWidth.current,
+        height: initialHeight.current,
         name: "clip",
         fill: "white",
         selectable: false,

@@ -5,7 +5,7 @@ import { Editor } from "@/features/editor/components/editor";
 import { useGetProject } from "@/features/projects/query/use-get-project";
 import { Loader, TriangleAlert } from "lucide-react";
 import Link from "next/link";
-import { ImSpinner10 } from "react-icons/im";
+import { ImSpinner2 } from "react-icons/im";
 
 interface EditorProjectPageProps {
   params: { projectId: string };
@@ -15,7 +15,7 @@ const EditorProjectPage = ({ params }: EditorProjectPageProps) => {
   if (isLoading || !data) {
     return (
       <div className="h-full flex flex-col items-center justify-center">
-        <ImSpinner10 className="size-10 animate-spin text-muted-foreground" />
+        <ImSpinner2 className="size-10 animate-spin text-muted-foreground" />
       </div>
     );
   }

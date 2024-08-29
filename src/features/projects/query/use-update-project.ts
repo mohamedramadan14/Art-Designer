@@ -1,5 +1,5 @@
 import { client } from "@/lib/hono";
-import { useMutation , useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { InferRequestType, InferResponseType } from "hono";
 import { toast } from "sonner";
@@ -15,8 +15,9 @@ type RequestType = InferRequestType<
 export const useUpdateProject = (projectId: string) => {
   const queryClient = useQueryClient();
 
-
   const mutation = useMutation<ResponseType, Error, RequestType>({
+    mutationKey: ["project", { projectId }],
+    
     mutationFn: async (json) => {
       const response = await client.api.projects[":projectId"].$patch({
         json,
@@ -29,7 +30,9 @@ export const useUpdateProject = (projectId: string) => {
     },
     onSuccess: () => {
       // invalidate the "projects" query ---> Done
-      queryClient.invalidateQueries({queryKey: ["projects" , { projectId }]});
+      queryClient.invalidateQueries({ queryKey: ["project", { projectId }] });
+      console.log("Project updated successfully");
+      
       /* toast.success("Project updated successfully"); */
     },
     onError: () => {
