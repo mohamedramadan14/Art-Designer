@@ -19,15 +19,28 @@ import {
 import { IoCopyOutline } from "react-icons/io5";
 import { FaTrash } from "react-icons/fa6";
 import { useDuplicateProject } from "@/features/projects/query/use-duplicate-project";
+import { useDeleteProject } from "@/features/projects/query/use-delete-project";
+import { useConfirm } from "@/hooks/use-confirm";
 
 export const ProjectsSection = () => {
   const router = useRouter();
   const duplicateMutation = useDuplicateProject();
+  const deleteMutation = useDeleteProject();
+
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Delete Project",
+    "Are you sure you want to delete this project?"
+  );
   const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useGetProjects();
 
   const onCopy = (id: string) => {
     duplicateMutation.mutate({ id });
+  };
+
+  const onDelete = async (id: string) => {
+    const ok = await confirm();
+    if (ok) deleteMutation.mutate({ id });
   };
 
   if (status === "pending") {
@@ -69,6 +82,7 @@ export const ProjectsSection = () => {
 
   return (
     <div className="space-y-4">
+      <ConfirmDialog />
       <h4 className="text-xl font-semibold">Recent Projects</h4>
       <Table>
         <TableBody>
@@ -100,7 +114,12 @@ export const ProjectsSection = () => {
                   <TableCell className="flex items-center justify-end">
                     <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost" disabled={false}>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          disabled={false}
+                          className="focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-transparent"
+                        >
                           <IoIosMore className="size-6" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -110,13 +129,13 @@ export const ProjectsSection = () => {
                           disabled={duplicateMutation.isPending}
                           onClick={() => onCopy(project.id)}
                         >
-                          <IoCopyOutline className="size-4 mr-2" />
+                          <IoCopyOutline className="size-4 mr-2 text-orange-600 fill-orange-600" />
                           Make a copy
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="cursor-pointer h-10"
-                          disabled={false}
-                          onClick={() => {}}
+                          disabled={deleteMutation.isPending}
+                          onClick={() => onDelete(project.id)}
                         >
                           <FaTrash className="size-4 mr-2 text-destructive fill-destructive" />
                           Delete

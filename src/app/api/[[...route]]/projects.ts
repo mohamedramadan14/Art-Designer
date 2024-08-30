@@ -7,6 +7,28 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 const app = new Hono()
+  .delete(
+    "/:id",
+    verifyAuth(),
+    zValidator("param", z.object({ id: z.string() })),
+    async (c) => {
+      const auth = c.get("authUser");
+      const { id } = c.req.valid("param");
+      if (!auth.token?.id) {
+        return c.json({ error: "unauthorized" }, 401);
+      }
+
+      const data = await db
+        .delete(projects)
+        .where(and(eq(projects.id, id), eq(projects.userId, auth.token.id)))
+        .returning();
+
+      if (data.length === 0) {
+        return c.json({ error: "project does not exist" }, 404);
+      }
+      return c.json({ data: { id } });
+    }
+  )
   .post(
     "/:id/duplicate",
     verifyAuth(),
@@ -40,10 +62,10 @@ const app = new Hono()
           updatedAt: new Date(),
         })
         .returning();
-      
-      if(duplicatedProject.length === 0) {
+
+      if (duplicatedProject.length === 0) {
         return c.json({ error: "failed to duplicate project" }, 400);
-      } 
+      }
       return c.json({ data: duplicatedProject[0] });
     }
   )
