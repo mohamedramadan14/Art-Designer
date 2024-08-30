@@ -1,5 +1,5 @@
 import { client } from "@/lib/hono";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { InferRequestType, InferResponseType } from "hono";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ type RequestType = InferRequestType<
 >["json"];
 
 export const useCreateProject = () => {
+  const queryClient = useQueryClient();
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
       const response = await client.api.projects.$post({ json });
@@ -20,7 +21,7 @@ export const useCreateProject = () => {
     },
     onSuccess: () => {
       toast.success("Project created successfully");
-      // TODO: invalidate the "projects" query
+      queryClient.invalidateQueries({ queryKey: ["projects"] });      
     },
     onError: () => {
       toast.error("Failed to create project");

@@ -581,6 +581,9 @@ export const useEditor = ({
   defaultHeight,
   defaultWidth,
 }: EditorHookProps) => {
+  console.log("default width", defaultWidth);
+  console.log("default height", defaultHeight);
+  
   // to avoid conflicting and triggering re-rendering that will lead to lose current progress
   const initialState = useRef(defaultState);
   const initialHeight = useRef(defaultHeight);

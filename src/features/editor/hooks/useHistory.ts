@@ -31,18 +31,23 @@ export const useHistory = ({ canvas, saveCallback }: UseHistoryProps) => {
     (skip = false) => {
       if (!canvas) return;
       const currentState = canvas.toJSON(JSON_KEYS_HISTORY);
-      const currentStateAsString = JSON.stringify(currentState);
+      const json = JSON.stringify(currentState);
 
       if (!skip && !skipSave.current) {
-        canvasHistory.current.push(currentStateAsString);
+        canvasHistory.current.push(json);
         setHistoryIndex(canvasHistory.current.length - 1);
       }
       const workspace = canvas
-        .getActiveObjects()
+        .getObjects()
         .find((item) => item.name === "clip");
-      const height = workspace?.get("height") || 0;
-      const width = workspace?.get("width") || 0;
-      saveCallback?.({ json: currentStateAsString, height, width });
+      
+      if(workspace){
+        const height = workspace?.get("height") || 1080;
+        const width = workspace?.get("width") || 1920;
+        console.log("height", height, "width", width);
+        saveCallback?.({ json, height, width });
+      }
+      
     },
     [canvas, saveCallback]
   );

@@ -12,6 +12,8 @@ interface EditorProjectPageProps {
 }
 const EditorProjectPage = ({ params }: EditorProjectPageProps) => {
   const { data, isLoading, isError } = useGetProject(params.projectId);
+  console.log(data);
+  
   if (isLoading || !data) {
     return (
       <div className="h-full flex flex-col items-center justify-center">

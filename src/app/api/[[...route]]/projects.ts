@@ -2,11 +2,79 @@ import { db } from "@/db/drizzle";
 import { projectInsertSchema, projects } from "@/db/schema";
 import { verifyAuth } from "@hono/auth-js";
 import { zValidator } from "@hono/zod-validator";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 
 const app = new Hono()
+  .post(
+    "/:id/duplicate",
+    verifyAuth(),
+    zValidator("param", z.object({ id: z.string() })),
+    async (c) => {
+      const auth = c.get("authUser");
+      const { id } = c.req.valid("param");
+      if (!auth.token?.id) {
+        return c.json({ error: "unauthorized" }, 401);
+      }
+
+      const data = await db
+        .select()
+        .from(projects)
+        .where(and(eq(projects.id, id), eq(projects.userId, auth.token.id)));
+      if (data.length === 0) {
+        return c.json({ error: "project does not exist" }, 404);
+      }
+
+      const project = data[0];
+
+      const duplicatedProject = await db
+        .insert(projects)
+        .values({
+          name: project.name + " (copy)",
+          json: project.json,
+          userId: auth.token.id,
+          height: project.height,
+          width: project.width,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      
+      if(duplicatedProject.length === 0) {
+        return c.json({ error: "failed to duplicate project" }, 400);
+      } 
+      return c.json({ data: duplicatedProject[0] });
+    }
+  )
+  .get(
+    "/",
+    verifyAuth(),
+    zValidator(
+      "query",
+      z.object({
+        page: z.coerce.number(),
+        limit: z.coerce.number(),
+      })
+    ),
+    async (c) => {
+      const auth = c.get("authUser");
+      const { page, limit } = c.req.valid("query");
+      if (!auth.token?.id) {
+        return c.json({ error: "unauthorized" }, 401);
+      }
+
+      const data = await db
+        .select()
+        .from(projects)
+        .where(eq(projects.userId, auth.token.id))
+        .limit(limit)
+        .offset((page - 1) * limit)
+        .orderBy(desc(projects.updatedAt));
+
+      return c.json({ data, nextPage: data.length >= limit ? page + 1 : null });
+    }
+  )
   .patch(
     "/:projectId",
     verifyAuth(),

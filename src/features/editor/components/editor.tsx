@@ -30,7 +30,7 @@ interface EditorProps {
   initialData: ProjectResponseType["data"];
 }
 
-export const Editor = ({ initialData }: EditorProps) => {
+export const Editor = ( {initialData} : EditorProps) => {
   const { mutate } = useUpdateProject(initialData.id);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
