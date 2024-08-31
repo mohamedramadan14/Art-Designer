@@ -8,6 +8,7 @@ import Image from "next/image";
 import { CiCircleAlert } from "react-icons/ci";
 import { useRemoveBackground } from "@/features/ai/query/use-remove-bg";
 import { LoaderPinwheel } from "lucide-react";
+import { usePaywall } from "@/features/subscription/hooks/use-paywall";
 
 interface RemoveBgSidebarProps {
   activeTool: ActiveTool;
@@ -21,12 +22,15 @@ export const RemoveBgSidebar = ({
 }: RemoveBgSidebarProps) => {
   const mutation = useRemoveBackground();
   const selectedObject = editor?.selectedObjects[0];
-
+  const { shouldBlock, triggerPaywall } = usePaywall();
   // @ts-ignore
   const imageSrc = selectedObject?._originalElement?.currentSrc;
 
   const onClick = () => {
-    // TODO: add paywall
+    if (shouldBlock) {
+      triggerPaywall();
+      return;
+    }
     mutation.mutate(
       { image: imageSrc },
       {

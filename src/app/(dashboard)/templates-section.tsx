@@ -9,8 +9,10 @@ import { RiLoader3Fill } from "react-icons/ri";
 import { TemplateCard } from "./template-card";
 import { useCreateProject } from "@/features/projects/query/use-create-project";
 import { useRouter } from "next/navigation";
+import { usePaywall } from "@/features/subscription/hooks/use-paywall";
 
 export const TemplatesSection = () => {
+  const {shouldBlock , triggerPaywall } = usePaywall();
   const mutation = useCreateProject();
   const router = useRouter();
   const { data, isLoading, isError } = useGetTemplates({
@@ -20,6 +22,11 @@ export const TemplatesSection = () => {
 
   const onClickHandler = (template: TemplateResponseType["data"][0]) => {
     // Check if template is Pro
+    if(template.isPro && shouldBlock) {
+      triggerPaywall();
+      return;
+    }
+    
     mutation.mutate(
       {
         name: `${template.name} Project`,

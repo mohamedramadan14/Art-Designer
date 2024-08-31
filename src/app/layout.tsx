@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { Modals } from "@/components/modals";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default async function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <Providers>
+            <Modals />
             <Toaster
               richColors
               theme="light"

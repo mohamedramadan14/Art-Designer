@@ -9,6 +9,7 @@ import { useGenerateImage } from "@/features/ai/query/use-generate-image";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa6";
 import { ImSpinner2 } from "react-icons/im";
+import { usePaywall } from "@/features/subscription/hooks/use-paywall";
 
 interface AIImageSidebarProps {
   activeTool: ActiveTool;
@@ -22,10 +23,13 @@ export const AIImageSidebar = ({
 }: AIImageSidebarProps) => {
   const mutation = useGenerateImage();
   const [prompt, setPrompt] = useState<string>("");
-
+  const { shouldBlock, triggerPaywall } = usePaywall();
   const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // TODO : block with paywall
+    if(shouldBlock) {
+      triggerPaywall();
+      return;
+    }
     mutation.mutate(
       { prompt: prompt },
       {
