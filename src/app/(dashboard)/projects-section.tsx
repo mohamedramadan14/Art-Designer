@@ -68,7 +68,7 @@ export const ProjectsSection = () => {
     );
   }
 
-  if (!data?.pages.length) {
+  if (!data?.pages.length || !data?.pages[0].data.length) {
     return (
       <div className="space-y-4">
         <h4 className="text-xl font-semibold">Recent Projects</h4>
