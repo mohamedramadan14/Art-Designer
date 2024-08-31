@@ -25,12 +25,13 @@ import { SettingsSidebar } from "./settings-sidebar";
 import { ProjectResponseType } from "@/features/projects/query/use-get-project";
 import { useUpdateProject } from "@/features/projects/query/use-update-project";
 import debounce from "lodash.debounce";
+import { TemplatesSidebar } from "@/features/editor/components/templates-sidebar";
 
 interface EditorProps {
   initialData: ProjectResponseType["data"];
 }
 
-export const Editor = ( {initialData} : EditorProps) => {
+export const Editor = ({ initialData }: EditorProps) => {
   const { mutate } = useUpdateProject(initialData.id);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -148,6 +149,11 @@ export const Editor = ( {initialData} : EditorProps) => {
           onChangeActiveTool={onChangeActiveTool}
         />
         <ImagesSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <TemplatesSidebar
           editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}

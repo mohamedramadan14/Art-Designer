@@ -3,55 +3,54 @@ import { cn } from "@/lib/utils";
 import { ToolSidebarHeader } from "@/features/editor/components/tool-sidebar-header";
 import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-close";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGetImages } from "@/features/images/query/use-get-images";
 import { AlertTriangle, Loader } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { UploadButton } from "@/lib/uploadthing";
+import {
+  TemplateResponseType,
+  useGetTemplates,
+} from "@/features/projects/query/use-get-templates";
+import { useConfirm } from "@/hooks/use-confirm";
 
-interface ImagesSidebarProps {
+interface TemplatesSidebarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
   editor: Editor | undefined;
 }
-export const ImagesSidebar = ({
+export const TemplatesSidebar = ({
   activeTool,
   onChangeActiveTool,
   editor,
-}: ImagesSidebarProps) => {
-  const { data, isLoading, isError } = useGetImages();
+}: TemplatesSidebarProps) => {
+  const { data, isLoading, isError } = useGetTemplates({
+    page: "1",
+    limit: "20",
+  });
 
-
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Are you sure you want to change this template?",
+    "This action cannot be undone."
+  );
   const onClose = () => {
     onChangeActiveTool("select");
   };
 
+  const onClickHandler = async (template: TemplateResponseType["data"][0]) => {
+    // check if template is Pro
+    const ok = await confirm();
+    if (ok) editor?.loadAsJson(template.json);
+  };
   return (
     <aside
       className={cn(
         "bg-white relative border-r z-[40] w-[360px] h-full flex flex-col",
-        activeTool === "images" ? "visible" : "hidden"
+        activeTool === "templates" ? "visible" : "hidden"
       )}
     >
+      <ConfirmDialog />
       <ToolSidebarHeader
-        title="Images"
-        description="Add and customize images to your workspace"
+        title="Templates"
+        description="Choose and customize templates from the library to your workspace"
       />
-      <div className="p-4 border-b">
-        <UploadButton
-          appearance={{
-            button:
-              "w-full text-sm font-medium bg-orange-500 hover:bg-orange-600 text-white rounded-sm",
-            allowedContent: "hidden",
-            container: "",
-          }}
-          content={{
-            button: "Upload Image",
-          }}
-          endpoint="imageUploader"
-          onClientUploadComplete={(res) => editor?.addImage(res[0].url)}
-        />
-      </div>
       {isLoading && (
         <div className="flex items-center justify-center flex-1">
           <Loader className="size-4 text-muted-foreground animate-spin" />
@@ -61,7 +60,7 @@ export const ImagesSidebar = ({
         <div className="flex flex-col gap-y-4 items-center justify-center flex-1">
           <AlertTriangle className="size-4 text-muted-foreground" />
           <p className="text-xs text-muted-foreground">
-            Failed to load images. Please try again
+            Failed to fetch templates. Please try again
           </p>
         </div>
       )}
@@ -69,28 +68,29 @@ export const ImagesSidebar = ({
         <div className="p-4">
           <div className="grid grid-cols-2 gap-4">
             {data &&
-              data.map((image) => (
+              data.map((template) => (
                 <button
-                  onClick={() => editor?.addImage(image.urls.regular)}
-                  key={image.id}
-                  className="relative w-full h-[100px] group hover:opacity-75 transition
+                  style={{
+                    aspectRatio: `${template.width}/${template.height}`,
+                  }}
+                  onClick={() => onClickHandler(template)}
+                  key={template.id}
+                  className="relative w-full group hover:opacity-75 transition
               bg-muted rounded-sm overflow-hidden border"
                 >
                   <Image
                     sizes="100px"
                     fill
-                    src={image.urls.small}
-                    alt={image.alt_description || "image"}
+                    src={template.thumbnailUrl || ""}
+                    alt={template.name || "Template"}
                     className="object-cover"
                   />
-                  <Link
-                    href={image.links.html}
-                    target="_blank"
-                    className="opacity-0 group-hover:opacity-100 absolute left-0 bottom-0 w-full text-[10px] truncate text-white hover:underline p-1 bg-black/50 text-left
+                  <div
+                    className="opacity-0 group-hover:opacity-100 absolute left-0 bottom-0 w-full text-[10px] truncate text-white p-1 bg-black/50 text-left
                 "
                   >
-                    {image.user.name}
-                  </Link>
+                    {template.name}
+                  </div>
                 </button>
               ))}
           </div>
