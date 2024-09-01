@@ -58,7 +58,7 @@ export const SubscriptionModal = () => {
         </ul>
         <DialogFooter className="pt-2 mt-2 gap-y-2">
           <Button
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white focus-visible:ring-orange-500"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >

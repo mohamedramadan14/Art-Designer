@@ -1,13 +1,16 @@
 import { useSubscriptionModal } from "@/features/subscription/store/use-subscription-modal";
+import { useGetSubscription } from "@/features/subscription/query/use-get-subscription";
 
 export const usePaywall = () => {
+  const { data : subscription, isLoading: isLoadingSubscription } =
+    useGetSubscription();
+
   const subscriptionModal = useSubscriptionModal();
 
-  // TODO: change based on user subscription
-  const shouldBlock = true;
-  // TODO: change loading based on fetching from API
+  const shouldBlock = isLoadingSubscription || !subscription?.data.isActive;
+
   return {
-    isLoading: false,
+    isLoading: isLoadingSubscription,
     shouldBlock,
     triggerPaywall: () => subscriptionModal.onOpen(),
   };
